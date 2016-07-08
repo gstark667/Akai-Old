@@ -2,3 +2,6 @@
 akai
 *.gch
 *.swp
+Makefile
+Akai
+.qmake.stash
