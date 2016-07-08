@@ -1,5 +1,39 @@
 #include "mainwindow.h"
 
+#include <iostream>
+
+void MessageInput::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Shift)
+    {
+        m_shiftPressed = true;
+        event->accept();
+    }
+    if (event->key() == Qt::Key_Return && !m_shiftPressed)
+    {
+        event->accept();
+        std::cout << toPlainText().toStdString() << std::endl;
+        emit sendMessage(toPlainText());
+    }
+    else
+    {
+        QTextEdit::keyPressEvent(event);
+    }
+}
+
+void MessageInput::keyReleaseEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Shift)
+    {
+        m_shiftPressed = false;
+        event->accept();
+    }
+    else
+    {
+        QTextEdit::keyPressEvent(event);
+    }
+}
+
 MainWindow::MainWindow()
 {
     setupUI();
@@ -9,13 +43,13 @@ MainWindow::~MainWindow()
 {
     delete addFriendAction;
     delete createChatAction;
-    delete ChatWidget;
-    delete gridLayout;
-    delete ChatSplit;
-    delete ChatList;
-    delete MessageSplit;
-    delete MessageHistory;
-    delete MessageInput;
+    delete m_chatWidget;
+    delete m_gridLayout;
+    delete m_chatSplit;
+    delete m_chatList;
+    delete m_messageSplit;
+    delete m_messageHistory;
+    delete m_messageInput;
     delete menubar;
     delete friendsMenu;
     delete chatsMenu;
@@ -31,39 +65,33 @@ void MainWindow::setupUI()
     addFriendAction = new QAction(this);
     createChatAction = new QAction(this);
 
-    ChatWidget = new QWidget(this);
-    gridLayout = new QGridLayout(ChatWidget);
+    m_chatWidget = new QWidget(this);
+    m_gridLayout = new QGridLayout(m_chatWidget);
 
-    ChatSplit = new QSplitter(ChatWidget);
-    ChatSplit->setOrientation(Qt::Horizontal);
+    m_chatSplit = new QSplitter(m_chatWidget);
+    m_chatSplit->setOrientation(Qt::Horizontal);
 
-    ChatList = new QListWidget(ChatSplit);
+    m_chatList = new QListWidget(m_chatSplit);
 
-    ChatSplit->addWidget(ChatList);
+    m_chatSplit->addWidget(m_chatList);
 
-    MessageSplit = new QSplitter(ChatSplit);
-    MessageSplit->setOrientation(Qt::Vertical);
-    MessageHistory = new QTextBrowser(MessageSplit);
-    MessageSplit->addWidget(MessageHistory);
-    MessageInput = new QTextEdit(MessageSplit);
-    MessageSplit->addWidget(MessageInput);
-    ChatSplit->addWidget(MessageSplit);
+    m_messageSplit = new QSplitter(m_chatSplit);
+    m_messageSplit->setOrientation(Qt::Vertical);
+    m_messageHistory = new QTextBrowser(m_messageSplit);
+    m_messageSplit->addWidget(m_messageHistory);
+    m_messageInput = new MessageInput(m_messageSplit);
+    m_messageSplit->addWidget(m_messageInput);
+    m_chatSplit->addWidget(m_messageSplit);
 
-    gridLayout->addWidget(ChatSplit, 0, 0, 1, 1);
+    m_gridLayout->addWidget(m_chatSplit, 0, 0, 1, 1);
 
-    setCentralWidget(ChatWidget);
+    setCentralWidget(m_chatWidget);
     menubar = new QMenuBar(this);
-    menubar->setObjectName(QStringLiteral("menubar"));
-    menubar->setGeometry(QRect(0, 0, 800, 30));
     friendsMenu = new QMenu(menubar);
-    friendsMenu->setObjectName(QStringLiteral("friendsMenu"));
     chatsMenu = new QMenu(menubar);
-    chatsMenu->setObjectName(QStringLiteral("chatsMenu"));
     menuOptions = new QMenu(menubar);
-    menuOptions->setObjectName(QStringLiteral("menuOptions"));
     setMenuBar(menubar);
     statusbar = new QStatusBar(this);
-    statusbar->setObjectName(QStringLiteral("statusbar"));
     setStatusBar(statusbar);
 
     menubar->addAction(friendsMenu->menuAction());
