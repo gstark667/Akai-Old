@@ -29,43 +29,23 @@ void MainWindow::setupUI()
     resize(800, 600);
 
     addFriendAction = new QAction(this);
-    addFriendAction->setObjectName(QStringLiteral("addFriendAction"));
     createChatAction = new QAction(this);
-    createChatAction->setObjectName(QStringLiteral("createChatAction"));
+
     ChatWidget = new QWidget(this);
-    ChatWidget->setObjectName(QStringLiteral("ChatWidget"));
     gridLayout = new QGridLayout(ChatWidget);
-    gridLayout->setObjectName(QStringLiteral("gridLayout"));
+
     ChatSplit = new QSplitter(ChatWidget);
-    ChatSplit->setObjectName(QStringLiteral("ChatSplit"));
     ChatSplit->setOrientation(Qt::Horizontal);
+
     ChatList = new QListWidget(ChatSplit);
-    ChatList->setObjectName(QStringLiteral("ChatList"));
-    QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    sizePolicy.setHorizontalStretch(0);
-    sizePolicy.setVerticalStretch(0);
-    sizePolicy.setHeightForWidth(ChatList->sizePolicy().hasHeightForWidth());
-    ChatList->setSizePolicy(sizePolicy);
+
     ChatSplit->addWidget(ChatList);
+
     MessageSplit = new QSplitter(ChatSplit);
-    MessageSplit->setObjectName(QStringLiteral("MessageSplit"));
     MessageSplit->setOrientation(Qt::Vertical);
     MessageHistory = new QTextBrowser(MessageSplit);
-    MessageHistory->setObjectName(QStringLiteral("MessageHistory"));
-    QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Maximum);
-    sizePolicy1.setHorizontalStretch(0);
-    sizePolicy1.setVerticalStretch(0);
-    sizePolicy1.setHeightForWidth(MessageHistory->sizePolicy().hasHeightForWidth());
-    MessageHistory->setSizePolicy(sizePolicy1);
     MessageSplit->addWidget(MessageHistory);
     MessageInput = new QTextEdit(MessageSplit);
-    MessageInput->setObjectName(QStringLiteral("MessageInput"));
-    MessageInput->setEnabled(true);
-    QSizePolicy sizePolicy2(QSizePolicy::Expanding, QSizePolicy::Minimum);
-    sizePolicy2.setHorizontalStretch(0);
-    sizePolicy2.setVerticalStretch(0);
-    sizePolicy2.setHeightForWidth(MessageInput->sizePolicy().hasHeightForWidth());
-    MessageInput->setSizePolicy(sizePolicy2);
     MessageSplit->addWidget(MessageInput);
     ChatSplit->addWidget(MessageSplit);
 
