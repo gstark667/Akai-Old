@@ -9,6 +9,8 @@
 #include <pthread.h>
 #include <semaphore.h>
 
+#include "client.h"
+
 
 typedef enum
 {
@@ -20,21 +22,12 @@ typedef enum
 } CommandType;
 
 
-struct client
-{
-    char *nick;
-    int nick_len;
-    int sockfd;
-} *clients;
-
-
 struct channel
 {
     struct client **clients;
 };
 
 
-int client_cnt = 0;
 sem_t shutdown_sem;
 
 
@@ -103,33 +96,6 @@ int handle_message(char *message, int message_len, struct client *client)
     {
 	free(argv);
     }
-}
-
-
-void remove_client(int sockfd)
-{
-    int to_remove = -1;
-    for (int i = 0; i < client_cnt; ++i)
-    {
-        if (clients[i].sockfd == sockfd)
-        {
-            to_remove = i;
-        }
-    }
-
-    if (to_remove == -1)
-        return;
-    printf("Found client to remove\n");
-
-    --client_cnt;
-    struct client *new_clients = malloc(sizeof(struct client) * client_cnt);
-    for (int i = 0; i < to_remove; ++i)
-        new_clients[i] = clients[i];
-    for (int i = to_remove; i < client_cnt; ++i)
-        new_clients[i] = clients[i + 1];
-    free(clients);
-    clients = new_clients;
-    close(sockfd);
 }
 
 
@@ -206,15 +172,10 @@ void *listen_for_clients(void *args)
 	    return;
 	}
 
-        ++client_cnt;
-        // TODO: make a mutex around clients
-        clients = realloc(clients, sizeof(struct client) * client_cnt);
-        struct client new_client;
-        new_client.sockfd = newsockfd;
-        clients[client_cnt - 1] = new_client;
+        struct client *new_client = add_client(newsockfd);
 
         pthread_t thread;
-        pthread_create(&thread, NULL, handle_client, &clients[client_cnt - 1]);
+        pthread_create(&thread, NULL, handle_client, new_client);
 
     }
 }
