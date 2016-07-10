@@ -1,6 +1,7 @@
+#include <iostream>
+
 #include "mainwindow.h"
 
-#include <iostream>
 
 void MessageInput::keyPressEvent(QKeyEvent *event)
 {
@@ -12,14 +13,15 @@ void MessageInput::keyPressEvent(QKeyEvent *event)
     if (event->key() == Qt::Key_Return && !m_shiftPressed)
     {
         event->accept();
-        std::cout << toPlainText().toStdString() << std::endl;
         emit sendMessage(toPlainText());
+        clear();
     }
     else
     {
         QTextEdit::keyPressEvent(event);
     }
 }
+
 
 void MessageInput::keyReleaseEvent(QKeyEvent *event)
 {
@@ -34,10 +36,36 @@ void MessageInput::keyReleaseEvent(QKeyEvent *event)
     }
 }
 
+
+void MessageHistory::updateMessages()
+{
+    QString html = "<html><head><style>p.sent-message { width: 100%; text-align: right; } p.recv-message { width: 100%; text-align: left; }</style></head><body>";
+    for (std::vector<QString>::iterator it = m_messageBuffer.begin(); it != m_messageBuffer.end(); ++it)
+        html += *it;
+    html += "</body>";
+    setHtml(html);
+}
+
+
+void MessageHistory::sendMessage(QString message)
+{
+    m_messageBuffer.push_back("<p class='sent-message'>" + message + "</p>");
+    updateMessages();
+}
+
+
+void MessageHistory::recvMessage(QString message)
+{
+    m_messageBuffer.push_back("<p class='recv-message'>" + message + "</p>");
+    updateMessages();
+}
+
+
 MainWindow::MainWindow()
 {
     setupUI();
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -56,6 +84,7 @@ MainWindow::~MainWindow()
     delete menuOptions;
     delete statusbar;
 }
+
 
 void MainWindow::setupUI()
 {
@@ -77,11 +106,14 @@ void MainWindow::setupUI()
 
     m_messageSplit = new QSplitter(m_chatSplit);
     m_messageSplit->setOrientation(Qt::Vertical);
-    m_messageHistory = new QTextBrowser(m_messageSplit);
+    m_messageHistory = new MessageHistory(m_messageSplit);
     m_messageSplit->addWidget(m_messageHistory);
     m_messageInput = new MessageInput(m_messageSplit);
     m_messageSplit->addWidget(m_messageInput);
     m_chatSplit->addWidget(m_messageSplit);
+
+    QObject::connect(m_messageInput, SIGNAL(sendMessage(QString)),
+                     m_messageHistory, SLOT(sendMessage(QString)));
 
     m_gridLayout->addWidget(m_chatSplit, 0, 0, 1, 1);
 
@@ -102,6 +134,7 @@ void MainWindow::setupUI()
 
     retranslateUI();
 }
+
 
 void MainWindow::retranslateUI()
 {

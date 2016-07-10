@@ -18,6 +18,8 @@
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QWidget>
 
+#include <vector>
+
 
 class MessageInput: public QTextEdit
 {
@@ -37,8 +39,29 @@ signals:
 };
 
 
+class MessageHistory: public QTextBrowser
+{
+    Q_OBJECT
+
+private:
+    std::vector<QString> m_messageBuffer;
+
+
+public:
+    MessageHistory(QWidget *parent): QTextBrowser(parent) {};
+
+    void updateMessages();
+
+public slots:
+    void sendMessage(QString message);
+    void recvMessage(QString message);
+};
+
+
 class MainWindow: public QMainWindow
 {
+    Q_OBJECT
+
 private:
     QAction *addFriendAction;
     QAction *createChatAction;
@@ -47,7 +70,7 @@ private:
     QSplitter *m_chatSplit;
     QListWidget *m_chatList;
     QSplitter *m_messageSplit;
-    QTextBrowser *m_messageHistory;
+    MessageHistory *m_messageHistory;
     MessageInput *m_messageInput;
     QMenuBar *menubar;
     QMenu *friendsMenu;
