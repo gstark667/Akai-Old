@@ -47,3 +47,10 @@ struct client *add_client(int sockfd)
 
     return &clients[client_cnt - 1];
 }
+
+
+void close_clients()
+{
+    for (int i = 0; i < client_cnt; ++i)
+        close(clients[i].sockfd);
+}

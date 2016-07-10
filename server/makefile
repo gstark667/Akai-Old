@@ -6,6 +6,7 @@ O=objects
 
 OBJS= \
     $(O)/client.o \
+    $(O)/server.o \
     $(O)/main.o
 
 all: $(O)/server
