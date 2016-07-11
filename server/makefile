@@ -7,6 +7,7 @@ O=objects
 OBJS= \
     $(O)/client.o \
     $(O)/server.o \
+    $(O)/channel.o \
     $(O)/main.o
 
 all: $(O)/server

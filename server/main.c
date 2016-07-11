@@ -6,12 +6,6 @@
 #include "server.h"
 
 
-/*struct channel
-{
-    struct client **clients;
-};*/
-
-
 int main(int argc, char *argv[])
 {
     if (argc < 2)
