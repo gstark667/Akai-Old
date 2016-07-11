@@ -68,28 +68,32 @@ int handle_message(char *message, int message_len, struct client *client)
         sem_post(&shutdown_sem);
     }
     // invite a user to a channel
-    else if (strcmp(argv[0], "INVITE") == 0)
+    else if (strcmp(argv[0], "INVITE") == 0 && argc == 2)
     {
+        channel_invite(argv[1], argv[2], client);
     }
     // check if a user is on
     else if (strcmp(argv[0], "ISON") == 0)
     {
     }
-    else if (strcmp(argv[0], "CREATE") == 0)
+    else if (strcmp(argv[0], "CREATE") == 0 && argc == 2)
     {
         channel_create(argv[1], client);
     }
     // join a channel
-    else if (strcmp(argv[0], "JOIN") == 0)
+    else if (strcmp(argv[0], "JOIN") == 0 && argc == 2)
     {
+        channel_join(argv[1], client);
     }
     // kick user from a channel
-    else if (strcmp(argv[0], "KICK") == 0)
+    else if (strcmp(argv[0], "KICK") == 0 && argc == 2)
     {
+        channel_kick(argv[1], client);
     }
     // list registered users
-    else if (strcmp(argv[0], "USERLIST") == 0)
+    else if (strcmp(argv[0], "USERLIST") == 0 && argc == 1)
     {
+        client_list(client);
     }
     // list users in channel
     else if (strcmp(argv[0], "CHANLIST") == 0 && argc == 2)
@@ -97,11 +101,12 @@ int handle_message(char *message, int message_len, struct client *client)
         channel_list(argv[1], client);
     }
     // leave a channel
-    else if (strcmp(argv[0], "PART") == 0)
+    else if (strcmp(argv[0], "PART") == 0 && argc == 2)
     {
+        channel_part(argv[1], client);
     }
     // ping the server
-    else if (strcmp(argv[0], "PING") == 0)
+    else if (strcmp(argv[0], "PING") == 0 && argc == 1)
     {
         send(client->sockfd, "PONG\n", 5, 0);
     }
@@ -116,7 +121,7 @@ int handle_message(char *message, int message_len, struct client *client)
         channel_chanmsg(argv[1], argv[2], client);
     }
     // log off of the server
-    else if (strcmp(argv[0], "QUIT") == 0)
+    else if (strcmp(argv[0], "QUIT") == 0 && argc == 1)
     {
         client_quit(client);
     }

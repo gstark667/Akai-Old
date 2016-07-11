@@ -60,3 +60,42 @@ void channel_chanmsg(char *name, char *message, struct client *client)
         send(channel->clients[i]->sockfd, request, n, 0);
     }
 }
+
+
+void channel_invite(char *name, char *nick, struct client *client)
+{
+    struct channel *channel = get_channel(name);
+    if (!channel)
+        return;
+    ++channel->invited_cnt;
+    channel->invited = realloc(channel->invited, sizeof(char *) * channel->invited_cnt);
+    channel->invited[channel->invited_cnt - 1] = strdup(nick);
+}
+
+
+void channel_join(char *name, struct client *client)
+{
+    struct channel *channel = get_channel(name);
+    if (!channel)
+        return;
+    for (int i = 0; i < channel->invited_cnt; ++i)
+    {
+        if (strcmp(client->nick, channel->invited[i]) == 0)
+        {
+            ++channel->client_cnt;
+            channel->clients = realloc(channel->clients, sizeof(struct client *) * channel->client_cnt);
+            channel->clients[client_cnt - 1] = client;
+        }
+    }
+}
+
+
+void channel_kick(char *name, struct client *client)
+{
+}
+
+
+void channel_part(char *name, struct client *client)
+{
+
+}

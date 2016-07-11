@@ -99,3 +99,8 @@ void client_usermsg(char *nick, char *message, struct client *client)
     // TODO: check if the user is a friend
     send(user->sockfd, request, strlen(request), 0);
 }
+
+void client_list(struct client *client)
+{
+
+}

@@ -26,4 +26,6 @@ void client_user(char *name, char *pass, struct client *client);
 
 void client_usermsg(char *name, char *message, struct client *client);
 
+void client_list(struct client *client);
+
 #endif
