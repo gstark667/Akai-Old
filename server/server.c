@@ -59,8 +59,8 @@ int split_args(char *buffer, char ***args)
 int handle_message(char *message, int message_len, struct client *client)
 {
     char **argv = NULL;
+    char *error = NULL;
     int argc = split_args(message, &argv);
-    printf("CMD: %s: %i\n", argv[0], argc);
 
     // kill the server
     if (strcmp(argv[0], "DIE") == 0)
@@ -68,9 +68,9 @@ int handle_message(char *message, int message_len, struct client *client)
         sem_post(&shutdown_sem);
     }
     // invite a user to a channel
-    else if (strcmp(argv[0], "INVITE") == 0 && argc == 2)
+    else if (strcmp(argv[0], "INVITE") == 0 && argc == 3)
     {
-        channel_invite(argv[1], argv[2], client);
+        error = channel_invite(argv[1], argv[2], client);
     }
     // check if a user is on
     else if (strcmp(argv[0], "ISON") == 0)
@@ -83,12 +83,12 @@ int handle_message(char *message, int message_len, struct client *client)
     // join a channel
     else if (strcmp(argv[0], "JOIN") == 0 && argc == 2)
     {
-        channel_join(argv[1], client);
+        error = channel_join(argv[1], client);
     }
     // kick user from a channel
-    else if (strcmp(argv[0], "KICK") == 0 && argc == 2)
+    else if (strcmp(argv[0], "KICK") == 0 && argc == 3)
     {
-        channel_kick(argv[1], client);
+        error = channel_kick(argv[1], argv[2], client);
     }
     // list registered users
     else if (strcmp(argv[0], "USERLIST") == 0 && argc == 1)
@@ -103,7 +103,7 @@ int handle_message(char *message, int message_len, struct client *client)
     // leave a channel
     else if (strcmp(argv[0], "PART") == 0 && argc == 2)
     {
-        channel_part(argv[1], client);
+        error = channel_part(argv[1], client);
     }
     // ping the server
     else if (strcmp(argv[0], "PING") == 0 && argc == 1)
@@ -118,7 +118,7 @@ int handle_message(char *message, int message_len, struct client *client)
     // send a message to a channel
     else if (strcmp(argv[0], "CHANMSG") == 0 && argc == 3)
     {
-        channel_chanmsg(argv[1], argv[2], client);
+        error = channel_chanmsg(argv[1], argv[2], client);
     }
     // log off of the server
     else if (strcmp(argv[0], "QUIT") == 0 && argc == 1)
@@ -130,6 +130,13 @@ int handle_message(char *message, int message_len, struct client *client)
     {
         client_user(argv[1], argv[2], client);
     }
+    else
+    {
+        error = "ERROR: Invalid command\n";
+    }
+
+    if (error)
+        send(client->sockfd, error, strlen(error), 0);
 
     if (argv)
     {
