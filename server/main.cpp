@@ -15,5 +15,7 @@ int main(int argc, char *argv[])
     }
 
     int portno = atoi(argv[1]);
-    return create_server(portno);
+
+    Server *server = new Server(portno);
+    return server->start();
 }

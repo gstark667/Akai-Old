@@ -1,38 +1,37 @@
 #ifndef H_SERVER
 #define H_SERVER
 
-#include <semaphore.h>
+#include <vector>
+#include <string>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 
-typedef enum
+#include "user.h"
+
+
+class Server
 {
-    AWAY,
-    DIE,
-    HELP,
-    INVITE,
-    ISON,
-    JOIN,
-    KICK,
-    KILL,
-    LIST,
-    MODE,
-    NAMES,
-    NICK,
-    NOTICE,
-    PART,
-    PASS,
-    PING,
-    PRIVMSG,
-    QUIT,
-    SETNAME,
-    USER,
-    USERS,
-    NONE
-} CommandType;
+private:
 
-sem_t shutdown_sem;
+    int m_sockfd, m_port;
+    std::vector<std::thread*> m_clientHandlers;
 
+    std::mutex m_shutdownMtx;
+    std::condition_variable m_shutdownCondition;
 
-int create_server(int port);
-void close_server(int sockfd);
+    std::vector<std::string> splitArgs(std::string);
+
+public:
+    Server(int port);
+
+    std::vector<std::string> splitMessage(std::string message);
+    void handleMessage(std::string message, User *user);
+    void handleUser(int sockfd);
+    void listenForUsers();
+
+    int start();
+    void stop();
+};
 
 #endif

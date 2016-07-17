@@ -1,36 +1,50 @@
 #ifndef H_CHANNEL
 #define H_CHANNEL
 
-#include "client.h"
+#include <string>
+#include <vector>
+#include <mutex>
 
-struct channel
+class Channel;
+
+#include "user.h"
+
+#define ADMIN_ERROR "ERROR :cannot admin this channel\n"
+#define USE_ERROR   "ERROR :cannot use this channel\n"
+
+class Channel
 {
-    char *name;
-    struct client *owner;
-    struct client **clients;
-    int client_cnt;
-    char **invited;
-    int invited_cnt;
-} **channels;
-int channel_cnt;
+private:
+    static std::vector<Channel *> s_channels;
+    static std::mutex s_channelsMtx;
 
-struct channel *get_channel(char *name);
+    std::string m_name;
+    User *m_owner;
+    std::vector<User *> m_users;
+    std::vector<std::string> m_invited;
+    std::mutex m_mtx;
 
-void channel_create(char *name, struct client *client);
+public:
+    static void addChannel(Channel *);
+    static Channel *getChannel(std::string name);
+    static void removeChannel(Channel *);
+    static std::string disbandChannel(User *user, std::string name);
 
-char *channel_invite(char *name, char *nick, struct client *client);
+    Channel(User *owner, std::string name);
 
-char *channel_join(char *name, struct client *client);
-
-char *channel_kick(char *name, char *nick, struct client *client);
-
-char *channel_part(char *name, struct client *client);
-
-char *channel_ban(char *name, char *nick, struct client *client);
-
-void channel_list(char *name, struct client *client);
-
-char *channel_chanmsg(char *name, char *message, struct client *client);
-
+    bool canJoin(User *user);
+    bool canUse(User *user);
+    bool canAdmin(User *user);
+    void addUser(User *user);
+    void removeUser(User *user);
+    std::string join(User *user);
+    std::string invite(User *user, std::string name);
+    std::string sendMessage(User *user, std::string message);
+    std::string part(User *user);
+    std::string kick(User *user, std::string name);
+    std::string ban(User *user, std::string name);
+    std::string disband(User *user);
+    std::string remove(User *user);
+};
 
 #endif
