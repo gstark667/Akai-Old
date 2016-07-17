@@ -13,12 +13,12 @@ void MessageInput::keyPressEvent(QKeyEvent *event)
     if (event->key() == Qt::Key_Return && !m_shiftPressed)
     {
         event->accept();
-        emit sendMessage(toPlainText());
+        emit sendMessage(text());
         clear();
     }
     else
     {
-        QTextEdit::keyPressEvent(event);
+        QLineEdit::keyPressEvent(event);
     }
 }
 
@@ -32,7 +32,7 @@ void MessageInput::keyReleaseEvent(QKeyEvent *event)
     }
     else
     {
-        QTextEdit::keyPressEvent(event);
+        QLineEdit::keyReleaseEvent(event);
     }
 }
 
@@ -58,6 +58,45 @@ void MessageHistory::recvMessage(QString message)
 {
     m_messageBuffer.push_back("<p class='recv-message'>" + message + "</p>");
     updateMessages();
+}
+
+
+ChannelWidget::ChannelWidget(QWidget *parent): QTreeWidget(parent)
+{
+    m_friends = new QTreeWidgetItem();
+    m_friends->setText(0, "Friends");
+
+    m_channels = new QTreeWidgetItem();
+    m_channels->setText(0, "Channels");
+
+    addTopLevelItem(m_friends);
+    addTopLevelItem(m_channels);
+}
+
+
+ChannelWidget::~ChannelWidget()
+{
+    delete m_friends;
+    delete m_channels;
+}
+
+
+void ChannelWidget::updateFriends(QStringList friends)
+{
+    std::cout << "Updating friends" << std::endl;
+    for (int i = 0; i < friends.size(); ++i)
+    {
+        std::cout << friends[i].toStdString() << std::endl;
+        QTreeWidgetItem *new_friend = new QTreeWidgetItem();
+        new_friend->setText(1, friends[i]);
+        m_friends->addChild(new_friend);
+    }
+}
+
+
+void ChannelWidget::updateChannels(QStringList channels)
+{
+
 }
 
 
@@ -100,7 +139,7 @@ void MainWindow::setupUI()
     m_chatSplit = new QSplitter(m_chatWidget);
     m_chatSplit->setOrientation(Qt::Horizontal);
 
-    m_chatList = new QListWidget(m_chatSplit);
+    m_chatList = new ChannelWidget(m_chatSplit);
 
     m_chatSplit->addWidget(m_chatList);
 
@@ -133,6 +172,17 @@ void MainWindow::setupUI()
     chatsMenu->addAction(createChatAction);
 
     retranslateUI();
+
+    m_loginDialog = new LoginDialog(this);
+    m_network     = new Network();
+    connect(m_loginDialog, SIGNAL(login(QString, QString)),
+            m_network,     SLOT(login(QString, QString)));
+    connect(m_network,        SIGNAL(recvMessage(QString)),
+            m_messageHistory, SLOT(recvMessage(QString)));
+    connect(m_network,     SIGNAL(updateFriends(QStringList)),
+            m_chatList,    SLOT(updateFriends(QStringList)));
+
+    m_loginDialog->show();
 }
 
 

@@ -7,8 +7,8 @@ TARGET = Akai
 INCLUDEPATH += .
 
 # Input
-HEADERS += mainwindow.h
-SOURCES += main.cpp mainwindow.cpp
-LIBS += -lQt5Widgets
+HEADERS += mainwindow.h logindialog.h network.h
+SOURCES += main.cpp mainwindow.cpp logindialog.cpp network.cpp
+LIBS += -lQt5Widgets -lQt5Network
 OBJECTS_DIR=objects
 MOC_DIR=objects

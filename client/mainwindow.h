@@ -9,19 +9,25 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QListWidget>
+#include <QtWidgets/QTreeWidget>
+#include <QtWidgets/QTreeWidgetItem>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QSplitter>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTextBrowser>
-#include <QtWidgets/QTextEdit>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QWidget>
 
 #include <vector>
 
+#include "logindialog.h"
+#include "network.h"
 
-class MessageInput: public QTextEdit
+
+class MessageInput: public QLineEdit
 {
     Q_OBJECT
 
@@ -32,7 +38,7 @@ private:
     void keyReleaseEvent(QKeyEvent *event);
 
 public:
-    MessageInput(QWidget *parent): QTextEdit(parent), m_shiftPressed(false) {};
+    MessageInput(QWidget *parent): QLineEdit(parent), m_shiftPressed(false) {};
 
 signals:
     void sendMessage(QString message);
@@ -58,6 +64,24 @@ public slots:
 };
 
 
+class ChannelWidget: public QTreeWidget
+{
+    Q_OBJECT
+
+private:
+    QTreeWidgetItem *m_friends;
+    QTreeWidgetItem *m_channels;
+
+public:
+    ChannelWidget(QWidget *parent);
+    ~ChannelWidget();
+
+public slots:
+    void updateFriends(QStringList friends);
+    void updateChannels(QStringList channels);
+};
+
+
 class MainWindow: public QMainWindow
 {
     Q_OBJECT
@@ -68,7 +92,7 @@ private:
     QWidget *m_chatWidget;
     QGridLayout *m_gridLayout;
     QSplitter *m_chatSplit;
-    QListWidget *m_chatList;
+    ChannelWidget *m_chatList;
     QSplitter *m_messageSplit;
     MessageHistory *m_messageHistory;
     MessageInput *m_messageInput;
@@ -77,6 +101,9 @@ private:
     QMenu *chatsMenu;
     QMenu *menuOptions;
     QStatusBar *statusbar;
+
+    LoginDialog *m_loginDialog;
+    Network *m_network;
 
 public:
     MainWindow();
