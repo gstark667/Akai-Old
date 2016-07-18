@@ -19,8 +19,8 @@ Network::~Network()
 void Network::login(QString username, QString password)
 {
     connectToHost("localhost", 6667);
-    sendMessage("USER " + username + " " + password);
-    sendMessage("USERLIST");
+    sendMessage("USER " + username + " " + password + "\n");
+    sendMessage("USERLIST\n");
 }
 
 
@@ -37,8 +37,16 @@ void Network::readMessage()
 
 void Network::sendMessage(QString message)
 {
-    QTextStream stream(this);
-    stream << message << "\n";
+    std::cout << "Sending: " << message.toStdString() << std::endl;
+    write(message.toStdString().c_str());
+    flush();
+}
+
+
+void Network::sendUserMessage(QString user, QString message)
+{
+    std::cout << "Sending " + message.toStdString() + " to " + user.toStdString() << std::endl;
+    sendMessage("USERMSG " + user + " :" + message + "\n");
 }
 
 
@@ -73,13 +81,14 @@ void Network::handleMessage(QString message)
     {
         std::cout << argv[i].toStdString() << std::endl;
     }
-    if (argv[0].compare("USERMSG") == 0 && argc == 3)
+    if (argv[0] == "USERMSG" && argc == 3)
     {
-        emit recvMessage(argv[2]);
+        emit recvUserMessage(argv[1], argv[2]);
         std::cout << "Message From '" << argv[1].toStdString() << "' :" << argv[2].toStdString() << std::endl;
     }
-    if (argv[0].compare("USERLIST") == 0 && argc == 2)
+    else if (argv[0] == "USERLIST" && argc == 2)
     {
+        std::cout << "Network got userlist" << std::endl;
         emit updateFriends(argv[1].split(" "));
     }
 }

@@ -3,103 +3,6 @@
 #include "mainwindow.h"
 
 
-void MessageInput::keyPressEvent(QKeyEvent *event)
-{
-    if (event->key() == Qt::Key_Shift)
-    {
-        m_shiftPressed = true;
-        event->accept();
-    }
-    if (event->key() == Qt::Key_Return && !m_shiftPressed)
-    {
-        event->accept();
-        emit sendMessage(text());
-        clear();
-    }
-    else
-    {
-        QLineEdit::keyPressEvent(event);
-    }
-}
-
-
-void MessageInput::keyReleaseEvent(QKeyEvent *event)
-{
-    if (event->key() == Qt::Key_Shift)
-    {
-        m_shiftPressed = false;
-        event->accept();
-    }
-    else
-    {
-        QLineEdit::keyReleaseEvent(event);
-    }
-}
-
-
-void MessageHistory::updateMessages()
-{
-    QString html = "<html><head><style>p.sent-message { width: 100%; text-align: right; } p.recv-message { width: 100%; text-align: left; }</style></head><body>";
-    for (std::vector<QString>::iterator it = m_messageBuffer.begin(); it != m_messageBuffer.end(); ++it)
-        html += *it;
-    html += "</body>";
-    setHtml(html);
-}
-
-
-void MessageHistory::sendMessage(QString message)
-{
-    m_messageBuffer.push_back("<p class='sent-message'>" + message + "</p>");
-    updateMessages();
-}
-
-
-void MessageHistory::recvMessage(QString message)
-{
-    m_messageBuffer.push_back("<p class='recv-message'>" + message + "</p>");
-    updateMessages();
-}
-
-
-ChannelWidget::ChannelWidget(QWidget *parent): QTreeWidget(parent)
-{
-    m_friends = new QTreeWidgetItem();
-    m_friends->setText(0, "Friends");
-
-    m_channels = new QTreeWidgetItem();
-    m_channels->setText(0, "Channels");
-
-    addTopLevelItem(m_friends);
-    addTopLevelItem(m_channels);
-}
-
-
-ChannelWidget::~ChannelWidget()
-{
-    delete m_friends;
-    delete m_channels;
-}
-
-
-void ChannelWidget::updateFriends(QStringList friends)
-{
-    std::cout << "Updating friends" << std::endl;
-    for (int i = 0; i < friends.size(); ++i)
-    {
-        std::cout << friends[i].toStdString() << std::endl;
-        QTreeWidgetItem *new_friend = new QTreeWidgetItem();
-        new_friend->setText(1, friends[i]);
-        m_friends->addChild(new_friend);
-    }
-}
-
-
-void ChannelWidget::updateChannels(QStringList channels)
-{
-
-}
-
-
 MainWindow::MainWindow()
 {
     setupUI();
@@ -151,8 +54,8 @@ void MainWindow::setupUI()
     m_messageSplit->addWidget(m_messageInput);
     m_chatSplit->addWidget(m_messageSplit);
 
-    QObject::connect(m_messageInput, SIGNAL(sendMessage(QString)),
-                     m_messageHistory, SLOT(sendMessage(QString)));
+    connect(m_messageInput, SIGNAL(sendMessage(QString)),
+            m_messageHistory, SLOT(sendMessage(QString)));
 
     m_gridLayout->addWidget(m_chatSplit, 0, 0, 1, 1);
 
@@ -176,11 +79,17 @@ void MainWindow::setupUI()
     m_loginDialog = new LoginDialog(this);
     m_network     = new Network();
     connect(m_loginDialog, SIGNAL(login(QString, QString)),
-            m_network,     SLOT(login(QString, QString)));
-    connect(m_network,        SIGNAL(recvMessage(QString)),
-            m_messageHistory, SLOT(recvMessage(QString)));
+            m_network,       SLOT(login(QString, QString)));
+    connect(m_network,      SIGNAL(recvUserMessage(QString, QString)),
+            m_messageHistory, SLOT(recvUserMessage(QString, QString)));
+    connect(m_messageHistory, SIGNAL(sendUserMessage(QString, QString)),
+            m_network,          SLOT(sendUserMessage(QString, QString)));
+    connect(m_chatList,     SIGNAL(itemClicked(QListWidgetItem *)),
+            m_messageHistory, SLOT(changeUser(QListWidgetItem *)));
+    connect(m_messageHistory, SIGNAL(addUser(QString)),
+            m_chatList,         SLOT(addUser(QString)));
     connect(m_network,     SIGNAL(updateFriends(QStringList)),
-            m_chatList,    SLOT(updateFriends(QStringList)));
+            m_chatList,      SLOT(updateFriends(QStringList)));
 
     m_loginDialog->show();
 }

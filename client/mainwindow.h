@@ -22,64 +22,13 @@
 #include <QtWidgets/QWidget>
 
 #include <vector>
+#include <map>
 
+#include "channelwidget.h"
+#include "messageinput.h"
+#include "messagehistory.h"
 #include "logindialog.h"
 #include "network.h"
-
-
-class MessageInput: public QLineEdit
-{
-    Q_OBJECT
-
-private:
-    bool m_shiftPressed;
-
-    void keyPressEvent(QKeyEvent *event);
-    void keyReleaseEvent(QKeyEvent *event);
-
-public:
-    MessageInput(QWidget *parent): QLineEdit(parent), m_shiftPressed(false) {};
-
-signals:
-    void sendMessage(QString message);
-};
-
-
-class MessageHistory: public QTextBrowser
-{
-    Q_OBJECT
-
-private:
-    std::vector<QString> m_messageBuffer;
-
-
-public:
-    MessageHistory(QWidget *parent): QTextBrowser(parent) {};
-
-    void updateMessages();
-
-public slots:
-    void sendMessage(QString message);
-    void recvMessage(QString message);
-};
-
-
-class ChannelWidget: public QTreeWidget
-{
-    Q_OBJECT
-
-private:
-    QTreeWidgetItem *m_friends;
-    QTreeWidgetItem *m_channels;
-
-public:
-    ChannelWidget(QWidget *parent);
-    ~ChannelWidget();
-
-public slots:
-    void updateFriends(QStringList friends);
-    void updateChannels(QStringList channels);
-};
 
 
 class MainWindow: public QMainWindow
