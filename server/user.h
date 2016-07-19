@@ -23,7 +23,6 @@ private:
     std::vector<std::string> m_friends;
 
 public:
-    static void list();
     static User *getUser(std::string name);
     static void addUser(User *user);
 
@@ -32,6 +31,7 @@ public:
     void sendRaw(std::string message);
 
     std::string setName(std::string name);
+    std::string list();
     std::string addFriend(std::string name);
     std::string sendMessage(std::string name, std::string message);
 

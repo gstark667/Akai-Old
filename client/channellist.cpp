@@ -1,21 +1,21 @@
-#include "channelwidget.h"
+#include "channellist.h"
 
 #include <iostream>
 
 
-ChannelWidget::ChannelWidget(QWidget *parent): QListWidget(parent)
+ChannelList::ChannelList(QWidget *parent): QListWidget(parent)
 {
 }
 
 
-ChannelWidget::~ChannelWidget()
+ChannelList::~ChannelList()
 {
     delete m_friends;
     delete m_channels;
 }
 
 
-void ChannelWidget::updateFriends(QStringList friends)
+void ChannelList::updateFriends(QStringList friends)
 {
     std::cout << "Updating friends" << std::endl;
     for (int i = 0; i < friends.size(); ++i)
@@ -26,13 +26,13 @@ void ChannelWidget::updateFriends(QStringList friends)
 }
 
 
-void ChannelWidget::updateChannels(QStringList channels)
+void ChannelList::updateChannels(QStringList channels)
 {
 
 }
 
 
-void ChannelWidget::addUser(QString user)
+void ChannelList::addUser(QString user)
 {
     addItem(user);
 }

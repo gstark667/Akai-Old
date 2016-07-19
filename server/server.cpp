@@ -30,8 +30,8 @@ vector<string> Server::splitMessage(string message)
         if (cur[0] == ':')
         {
             string trailer = cur.substr(1);
-            getline(ss, cur);
-            trailer += cur;
+            cur = ss.get();
+            trailer += cur + "\n";
             argv.push_back(trailer);
             break;
         }
@@ -51,6 +51,8 @@ void Server::handleMessage(string message, User *user)
 
     if (argv[0] == "USER" && argc == 3)
         error = user->setName(argv[1]);
+    else if (argv[0] == "USERLIST" && argc == 1)
+        error = user->list();
     else if (argv[0] == "FRIEND" && argc == 2)
         error = user->addFriend(argv[1]);
     else if (argv[0] == "USERMSG" && argc == 3)
@@ -89,7 +91,14 @@ void Server::handleUser(int sockfd)
         int n = recv(sockfd, buffer, 256, 0);
         if (n <= 0)
             break;
-        handleMessage(string(buffer), user);
+        
+        string message(buffer);
+        stringstream ss(message);
+        for (string line; getline(ss, line); )
+        {
+            cout << "MESSAGE:" << line << endl;
+            handleMessage(line, user);
+        }
     }
     user->quit();
     delete user;

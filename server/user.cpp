@@ -57,6 +57,21 @@ string User::setName(string name)
 }
 
 
+string User::list()
+{
+    string request = "USERLIST :";
+    for (vector<User *>::iterator it = s_users.begin(); it != s_users.end(); ++it)
+    {
+        if (*it == this)
+            continue;
+        request += (*it)->getName() + " ";
+    }
+    request[request.size() - 1] = '\n';
+    sendRaw(request);
+    return "";
+}
+
+
 string User::addFriend(string name)
 {
     if (name == m_name)

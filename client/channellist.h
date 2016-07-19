@@ -22,7 +22,7 @@
 
 
 // TODO make this a tab widget and make a tab for channels and a tab for chats
-class ChannelWidget: public QListWidget
+class ChannelList: public QListWidget
 {
     Q_OBJECT
 
@@ -31,8 +31,8 @@ private:
     QListWidgetItem *m_channels;
 
 public:
-    ChannelWidget(QWidget *parent);
-    ~ChannelWidget();
+    ChannelList(QWidget *parent);
+    ~ChannelList();
 
 public slots:
     void updateFriends(QStringList friends);

@@ -24,7 +24,7 @@
 #include <vector>
 #include <map>
 
-#include "channelwidget.h"
+#include "channellist.h"
 #include "messageinput.h"
 #include "messagehistory.h"
 #include "logindialog.h"
@@ -41,7 +41,7 @@ private:
     QWidget *m_chatWidget;
     QGridLayout *m_gridLayout;
     QSplitter *m_chatSplit;
-    ChannelWidget *m_chatList;
+    ChannelList *m_channelList;
     QSplitter *m_messageSplit;
     MessageHistory *m_messageHistory;
     MessageInput *m_messageInput;

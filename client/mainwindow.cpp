@@ -16,7 +16,7 @@ MainWindow::~MainWindow()
     delete m_chatWidget;
     delete m_gridLayout;
     delete m_chatSplit;
-    delete m_chatList;
+    delete m_channelList;
     delete m_messageSplit;
     delete m_messageHistory;
     delete m_messageInput;
@@ -42,9 +42,9 @@ void MainWindow::setupUI()
     m_chatSplit = new QSplitter(m_chatWidget);
     m_chatSplit->setOrientation(Qt::Horizontal);
 
-    m_chatList = new ChannelWidget(m_chatSplit);
+    m_channelList = new ChannelList(m_chatSplit);
 
-    m_chatSplit->addWidget(m_chatList);
+    m_chatSplit->addWidget(m_channelList);
 
     m_messageSplit = new QSplitter(m_chatSplit);
     m_messageSplit->setOrientation(Qt::Vertical);
@@ -84,12 +84,12 @@ void MainWindow::setupUI()
             m_messageHistory, SLOT(recvUserMessage(QString, QString)));
     connect(m_messageHistory, SIGNAL(sendUserMessage(QString, QString)),
             m_network,          SLOT(sendUserMessage(QString, QString)));
-    connect(m_chatList,     SIGNAL(itemClicked(QListWidgetItem *)),
+    connect(m_channelList,    SIGNAL(itemClicked(QListWidgetItem *)),
             m_messageHistory, SLOT(changeUser(QListWidgetItem *)));
     connect(m_messageHistory, SIGNAL(addUser(QString)),
-            m_chatList,         SLOT(addUser(QString)));
+            m_channelList,      SLOT(addUser(QString)));
     connect(m_network,     SIGNAL(updateFriends(QStringList)),
-            m_chatList,      SLOT(updateFriends(QStringList)));
+            m_channelList,   SLOT(updateFriends(QStringList)));
 
     m_loginDialog->show();
 }
