@@ -8,14 +8,14 @@ INCLUDEPATH += .
 
 # Input
 HEADERS += addfrienddialog.h \
-           channellist.h \
+           messagelist.h \
            logindialog.h \
            mainwindow.h \
            messagehistory.h \
            messageinput.h \
            network.h
 SOURCES += addfrienddialog.cpp \
-           channellist.cpp \
+           messagelist.cpp \
            logindialog.cpp \
            main.cpp \
            mainwindow.cpp \

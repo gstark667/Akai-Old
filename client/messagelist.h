@@ -19,23 +19,32 @@
 #include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QTabWidget>
 
 
-// TODO make this a tab widget and make a tab for channels and a tab for chats
-class ChannelList: public QListWidget
+// TODO make this a tab widget and make a tab for groups and a tab for chats
+class MessageList: public QTabWidget
 {
     Q_OBJECT
 
 private:
-    QListWidgetItem *m_friends;
-    QListWidgetItem *m_channels;
+    QListWidget *m_friendsList;
+    QListWidget *m_groupsList;
 
 public:
-    ChannelList(QWidget *parent);
-    ~ChannelList();
+    MessageList(QWidget *parent);
+    ~MessageList();
+
+    void setupUI();
+    void retranslateUI();
 
 public slots:
     void updateFriends(QStringList friends);
-    void updateChannels(QStringList channels);
-    void addUser(QString);
+    void updateGroups(QStringList groups);
+    void addFriend(QString);
+    void addGroup(QString);
+
+signals:
+    void friendSelected(QListWidgetItem *item);
+    void groupSelected(QListWidgetItem *item);
 };

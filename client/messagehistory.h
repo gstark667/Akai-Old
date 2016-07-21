@@ -10,7 +10,8 @@ class MessageHistory: public QTextBrowser
 
 private:
     std::map<QString, QString> m_userMessages;
-    QString m_currentUser;
+    QString m_currentFriend;
+    QString m_currentGroup;
 
 public:
     MessageHistory(QWidget *parent): QTextBrowser(parent) {};
@@ -18,7 +19,7 @@ public:
     void updateMessages();
 
 public slots:
-    void changeUser(QListWidgetItem *user);
+    void friendSelected(QListWidgetItem *item);
     void sendMessage(QString message);
     void recvUserMessage(QString user, QString message);
 
