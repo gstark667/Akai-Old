@@ -67,10 +67,7 @@ class User:
             user = get_user(friend_name)
             user.friend_req(self.name, message)
         except UserException:
-            if message:
-                database.leave_message(self.name, friend_name, 'FRIEND %s :%s' % (self.name, message))
-            else:
-                database.leave_message(self.name, friend_name, 'FRIEND %s' % (self.name))
+            pass
 
     def friend_req(self, friend_name, message=None):
         if message:
