@@ -20,6 +20,7 @@ public:
 
 public slots:
     void friendSelected(QListWidgetItem *item);
+    void groupSelected(QListWidgetItem *item);
     void sendMessage(QString message);
     void recvUserMessage(QString user, QString message);
 

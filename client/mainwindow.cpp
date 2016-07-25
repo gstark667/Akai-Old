@@ -76,18 +76,23 @@ void MainWindow::setupUI()
 
     retranslateUI();
 
+    m_messageList->addFriend("only_friend");
+    m_messageList->addGroup("forever_alone");
+
     m_loginDialog = new LoginDialog(this);
     m_network     = new Network();
     connect(m_loginDialog, SIGNAL(login(QString, QString)),
             m_network,       SLOT(login(QString, QString)));
+    connect(m_messageInput, SIGNAL(sendMessage(QString)),
+            m_messageHistory, SLOT(sendMessage(QString)));
     connect(m_network,      SIGNAL(recvUserMessage(QString, QString)),
             m_messageHistory, SLOT(recvUserMessage(QString, QString)));
     connect(m_messageHistory, SIGNAL(sendUserMessage(QString, QString)),
             m_network,          SLOT(sendUserMessage(QString, QString)));
-    connect(m_messageList,    SIGNAL(friendSelected(QListWidgetItem *)),
+    connect(m_messageList,  SIGNAL(friendSelected(QListWidgetItem *)),
             m_messageHistory, SLOT(friendSelected(QListWidgetItem *)));
     connect(m_messageHistory, SIGNAL(addUser(QString)),
-            m_messageList,      SLOT(addUser(QString)));
+            m_messageList,      SLOT(addFriend(QString)));
     connect(m_network,     SIGNAL(updateFriends(QStringList)),
             m_messageList,   SLOT(updateFriends(QStringList)));
 

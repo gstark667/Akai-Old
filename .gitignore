@@ -5,3 +5,5 @@ akai
 Makefile
 Akai
 .qmake.stash
+*.pyc
+__pycache__

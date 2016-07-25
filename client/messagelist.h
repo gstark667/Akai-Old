@@ -22,7 +22,6 @@
 #include <QtWidgets/QTabWidget>
 
 
-// TODO make this a tab widget and make a tab for groups and a tab for chats
 class MessageList: public QTabWidget
 {
     Q_OBJECT

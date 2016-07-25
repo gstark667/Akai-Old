@@ -15,9 +15,16 @@ void MessageHistory::updateMessages()
 void MessageHistory::friendSelected(QListWidgetItem *item)
 {
     m_currentFriend = item->text();
+    m_currentGroup  = "";
     if (m_userMessages.find(m_currentFriend) == m_userMessages.end())
         m_userMessages[m_currentFriend] = "";
-    updateMessages();
+}
+
+
+void MessageHistory::groupSelected(QListWidgetItem *item)
+{
+    m_currentFriend = "";
+    m_currentGroup  = item->text();
 }
 
 
@@ -30,7 +37,6 @@ void MessageHistory::sendMessage(QString message)
     emit sendUserMessage(m_currentFriend, message);
     updateMessages();
 }
-
 
 void MessageHistory::recvUserMessage(QString user, QString message)
 {
