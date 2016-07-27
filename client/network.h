@@ -15,11 +15,10 @@ public:
     void sendMessage(QString message);
 
 private slots:
-    void login(QString username, QString password);
-
     void readMessage();
 
 public slots:
+    void login(QString username, QString password);
     void sendUserMessage(QString user, QString message);
 
 signals:

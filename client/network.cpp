@@ -18,9 +18,10 @@ Network::~Network()
 
 void Network::login(QString username, QString password)
 {
-    connectToHost("localhost", 6667);
-    sendMessage("USER " + username + " " + password + "\n");
-    sendMessage("USERLIST\n");
+    connectToHost("162.243.175.235", 6667);
+    waitForConnected();
+    sendMessage("USER " + username + " " + password + "\r\n");
+    sendMessage("FRIENDS\r\n");
 }
 
 
@@ -86,9 +87,9 @@ void Network::handleMessage(QString message)
         emit recvUserMessage(argv[1], argv[2]);
         std::cout << "Message From '" << argv[1].toStdString() << "' :" << argv[2].toStdString() << std::endl;
     }
-    else if (argv[0] == "USERLIST" && argc == 2)
+    else if (argv[0] == "FRIENDS" && argc == 2)
     {
         std::cout << "Network got userlist" << std::endl;
-        emit updateFriends(argv[1].split(" "));
+        emit updateFriends(argv[1].simplified().split(" "));
     }
 }

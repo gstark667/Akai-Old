@@ -1,12 +1,15 @@
 #include "messagehistory.h"
 
+#include <iostream>
+
 
 void MessageHistory::updateMessages()
 {
     QString html = "<html><head><style>p.sent-message { width: 100%; text-align: right; } p.recv-message { width: 100%; text-align: left; }</style></head><body>";
-    html += m_userMessages[m_currentFriend];
-    //for (std::vector<QString>::iterator it = m_messageBuffer.begin(); it != m_messageBuffer.end(); ++it)
-    //    html += *it;
+    if (m_currentFriend.size() > 0)
+        html += m_userMessages[m_currentFriend];
+    else if (m_currentGroup.size() > 0)
+        html += m_groupMessages[m_currentGroup];
     html += "</body>";
     setHtml(html);
 }
@@ -18,6 +21,7 @@ void MessageHistory::friendSelected(QListWidgetItem *item)
     m_currentGroup  = "";
     if (m_userMessages.find(m_currentFriend) == m_userMessages.end())
         m_userMessages[m_currentFriend] = "";
+    updateMessages();
 }
 
 
@@ -25,6 +29,9 @@ void MessageHistory::groupSelected(QListWidgetItem *item)
 {
     m_currentFriend = "";
     m_currentGroup  = item->text();
+    if (m_groupMessages.find(m_currentGroup) == m_groupMessages.end())
+        m_groupMessages[m_currentGroup] = "";
+    updateMessages();
 }
 
 

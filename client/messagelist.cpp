@@ -24,8 +24,8 @@ void MessageList::setupUI()
     addTab(m_friendsList, "Friends");
     addTab(m_groupsList, "Groups");
 
-    connect(m_friendsList, SIGNAL(itemChanged(QListWidgetItem *)), this, SIGNAL(friendSelected(QListWidgetItem *)));
-    connect(m_groupsList, SIGNAL(itemChanged(QListWidgetItem *)), this, SIGNAL(groupSelected(QListWidgetItem *)));
+    connect(m_friendsList, &QListWidget::itemPressed, this, &MessageList::friendSelected);
+    connect(m_groupsList, &QListWidget::itemPressed, this, &MessageList::groupSelected);
 }
 
 
@@ -41,8 +41,11 @@ void MessageList::updateFriends(QStringList friends)
     std::cout << "Updating friends" << std::endl;
     for (int i = 0; i < friends.size(); ++i)
     {
-        std::cout << friends[i].toStdString() << std::endl;
-        m_friendsList->addItem(friends[i]);
+        if (m_friendsList->findItems(friends[i], Qt::MatchExactly).size() == 0)
+        {
+            std::cout << friends[i].toStdString() << std::endl;
+            m_friendsList->addItem(friends[i]);
+        }
     }
 }
 

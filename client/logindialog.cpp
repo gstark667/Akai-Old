@@ -46,6 +46,7 @@ void LoginDialog::setupUI()
 
     m_passwordInput = new QLineEdit(this);
     m_passwordInput->setObjectName(QStringLiteral("m_passwordInput"));
+    m_passwordInput->setEchoMode(QLineEdit::Password);
 
     m_gridLayout->addWidget(m_passwordInput, 1, 1, 1, 1);
 
