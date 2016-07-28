@@ -24,6 +24,7 @@ public slots:
     void groupSelected(QListWidgetItem *item);
     void sendMessage(QString message);
     void recvUserMessage(QString user, QString message);
+    void sentUserMessage(QString user, QString message);
 
 signals:
     void sendUserMessage(QString user, QString message);

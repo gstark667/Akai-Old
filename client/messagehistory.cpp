@@ -37,12 +37,8 @@ void MessageHistory::groupSelected(QListWidgetItem *item)
 
 void MessageHistory::sendMessage(QString message)
 {
-    if (m_currentFriend == "")
-        return;
-
-    m_userMessages[m_currentFriend] += ("<p class='sent-message'>" + message + "</p>");
+    sentUserMessage(m_currentFriend, message);
     emit sendUserMessage(m_currentFriend, message);
-    updateMessages();
 }
 
 void MessageHistory::recvUserMessage(QString user, QString message)
@@ -54,6 +50,20 @@ void MessageHistory::recvUserMessage(QString user, QString message)
     }
 
     m_userMessages[user] += ("<p class='recv-message'>" + message + "</p>");
+    //m_messageBuffer.push_back("<p class='recv-message'>" + message + "</p>");
+    if (user == m_currentFriend)
+        updateMessages();
+}
+
+void MessageHistory::sentUserMessage(QString user, QString message)
+{
+    if (m_userMessages.find(user) == m_userMessages.end())
+    {
+        m_userMessages[user] = "";
+        emit addUser(user);
+    }
+
+    m_userMessages[user] += ("<p class='sent-message'>" + message + "</p>");
     //m_messageBuffer.push_back("<p class='recv-message'>" + message + "</p>");
     if (user == m_currentFriend)
         updateMessages();

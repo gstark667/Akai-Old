@@ -80,6 +80,7 @@ void MainWindow::setupUI()
     connect(m_messageInput, &MessageInput::sendMessage, m_messageHistory, &MessageHistory::sendMessage);
     connect(m_messageHistory, &MessageHistory::sendUserMessage, m_network, &Network::sendUserMessage);
     connect(m_network, &Network::recvUserMessage, m_messageHistory, &MessageHistory::recvUserMessage);
+    connect(m_network, &Network::sentUserMessage, m_messageHistory, &MessageHistory::sentUserMessage);
 
     connect(m_messageList, &MessageList::friendSelected, m_messageHistory, &MessageHistory::friendSelected);
     connect(m_messageHistory, &MessageHistory::addUser, m_messageList, &MessageList::addFriend);

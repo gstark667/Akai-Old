@@ -25,7 +25,6 @@ if __name__ == '__main__':
         #TODO make this multithreaded
         for message in message_queue:
             message[0].send(message[1])
-            print(message)
         del message_queue[:]
 
     u.close()

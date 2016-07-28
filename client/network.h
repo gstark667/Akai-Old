@@ -23,6 +23,7 @@ public slots:
 
 signals:
     void recvUserMessage(QString user, QString message);
+    void sentUserMessage(QString user, QString message);
 
     void updateFriends(QStringList friends);
 };

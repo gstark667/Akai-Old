@@ -1,5 +1,5 @@
-from pymongo import MongoClient
-import binascii, hashlib, os
+from pymongo import MongoClient, ASCENDING
+import binascii, hashlib, os, time
 
 
 client = MongoClient('localhost', 27017)
@@ -52,17 +52,19 @@ def authenticate(name, password):
 
 
 def add_friend(name, friend_name):
-    #TODO make sure we don't get dups
+    if is_friend(name, friend_name):
+        raise DBException('ERROR: "%s" is already your friend' % (friend_name))
     user = get_user(name)
     friend = get_user(friend_name)
     db.users.update({'name': name}, {'$push': {'friends': friend['_id']}})
 
 
 def remove_friend(name, friend_name):
-    #TODO make sure they're actually a friend
+    if not is_friend(name, friend_name):
+        raise DBException('ERROR: "%s" is not your friend' % (friend_name))
     user = get_user(name)
     friend = get_user(friend_name)
-    db.users.update({'name': name}, {'$pop': {'friends': friend['_id']}})
+    db.users.update({'name': name}, {'$pull': {'friends': friend['_id']}})
 
 
 def is_friend(name, friend_name):
@@ -86,9 +88,9 @@ def save_message(name, receiver_name, message):
         raise DBException('User "%s" is not your friend' % (receiver_name))
     user = get_user(name)
     receiver = get_user(receiver_name)
-    db.messages.insert({'sender': user['_id'], 'receiver': receiver['_id'], 'message': message})
+    db.messages.insert({'sender': user['_id'], 'receiver': receiver['_id'], 'message': message, 'time': time.time()})
 
 
 def get_messages(name):
     user = get_user(name)
-    return [message for message in db.messages.find({'receiver': user['_id']})]
+    return [message for message in db.messages.find({'$or': [{'receiver': user['_id']}, {'sender': user['_id']}]}).sort([('time', ASCENDING)])]

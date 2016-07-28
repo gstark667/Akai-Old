@@ -55,11 +55,25 @@ class User:
         self.name = name
 
     def authenticate(self, name, password):
+        user = None
+        try:
+            user = get_user(name)
+        except UserException:
+            pass
+        if user:
+            raise UserException('User "%s" is already logged in' % (name))
         database.authenticate(name, password)
         self.name = name
+        self.message_history()
+
+    def message_history(self):
         for message in database.get_messages(self.name):
             sender = database.get_user_by_id(message['sender'])
-            self.send_message('USERMSG %s :%s' % (sender['name'], message['message']))
+            receiver = database.get_user_by_id(message['receiver'])
+            if sender['name'] == self.name:
+                self.send_message('USERMSGSNT %s :%s' % (receiver['name'], message['message']))
+            else:
+                self.send_message('USERMSG %s :%s' % (sender['name'], message['message']))
 
     def friend(self, friend_name, message=None):
         database.add_friend(self.name, friend_name)
@@ -88,12 +102,12 @@ class User:
         self.send_message('USERMSG %s :%s' % (name, message))
 
     def send_usermsg(self, name, message):
+        database.save_message(self.name, name, message)
         try:
             user = get_user(name)
             user.usermsg(self.name, message)
         except UserException:
             pass
-        database.save_message(self.name, name, message)
 
     def friends(self):
         friends = database.list_friends(self.name)
@@ -108,6 +122,7 @@ class User:
         users.remove(self)
 
     def process_message(self, message):
+        print('Processing: ' + message)
         args = split_message(message)
         argc = len(args)
 

@@ -28,11 +28,9 @@ void Network::login(QString username, QString password)
 void Network::readMessage()
 {
     QTextStream stream(this);
-    while (canReadLine())
-    {
-        QString message = stream.readLine();
-        handleMessage(message);
-    }
+    QStringList messages = stream.readAll().split("\r\n");
+    for (int i = 0; i < messages.size(); ++i)
+        handleMessage(messages[i]);
 }
 
 
@@ -47,7 +45,7 @@ void Network::sendMessage(QString message)
 void Network::sendUserMessage(QString user, QString message)
 {
     std::cout << "Sending " + message.toStdString() + " to " + user.toStdString() << std::endl;
-    sendMessage("USERMSG " + user + " :" + message + "\n");
+    sendMessage("USERMSG " + user + " :" + message + "\r\n");
 }
 
 
@@ -86,6 +84,10 @@ void Network::handleMessage(QString message)
     {
         emit recvUserMessage(argv[1], argv[2]);
         std::cout << "Message From '" << argv[1].toStdString() << "' :" << argv[2].toStdString() << std::endl;
+    }
+    else if (argv[0] == "USERMSGSNT" && argc == 3)
+    {
+        emit sentUserMessage(argv[1], argv[2]);
     }
     else if (argv[0] == "FRIENDS" && argc == 2)
     {
