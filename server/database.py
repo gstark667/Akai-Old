@@ -40,7 +40,7 @@ def create_user(name, password):
     except DBException:
         salt = create_salt()
         hash = hash_password(password, salt)
-        return db.users.insert({'name': name, 'hash': hash, 'salt': salt})
+        return db.users.insert({'name': name, 'hash': hash, 'salt': salt, 'friends': []})
     raise DBException('User "%s" exists' % (name))
 
 
@@ -80,7 +80,11 @@ def list_friends(name):
     if not 'friends' in user:
         return []
     #TODO handle users that leave
-    return [get_user_by_id(friend) for friend in user['friends']]
+    return [get_user_by_id(friend)['name'] for friend in user['friends']]
+
+
+def list_users():
+    return [user['name'] for user in db.users.find({}, {'name': 1})]
 
 
 def save_message(name, receiver_name, message):

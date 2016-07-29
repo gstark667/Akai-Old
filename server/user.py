@@ -49,10 +49,14 @@ class User:
     
     def close(self):
         return self.sock.close()
+
+    def authenticated(self, name):
+        self.name = name
+        self.send_message('ISAUTH ' + name)
     
     def register(self, name, password):
         database.create_user(name, password)
-        self.name = name
+        self.authenticated(name)
 
     def authenticate(self, name, password):
         user = None
@@ -63,8 +67,7 @@ class User:
         if user:
             raise UserException('User "%s" is already logged in' % (name))
         database.authenticate(name, password)
-        self.name = name
-        self.message_history()
+        self.authenticated(name)
 
     def message_history(self):
         for message in database.get_messages(self.name):
@@ -103,6 +106,7 @@ class User:
 
     def send_usermsg(self, name, message):
         database.save_message(self.name, name, message)
+        self.send_message('USERMSGSNT %s :%s' % (name, message))
         try:
             user = get_user(name)
             user.usermsg(self.name, message)
@@ -113,9 +117,16 @@ class User:
         friends = database.list_friends(self.name)
         message = "FRIENDS :"
         for friend in friends:
-            message += friend['name'] + ' '
-        message = message.strip()
-        self.send_message(message)
+            message += friend + ' '
+        self.send_message(message.strip())
+
+    def users(self):
+        users = database.list_users()
+        message = 'USERS :'
+        for user in users:
+            if self.name != user:
+                message += user + ' '
+        self.send_message(message.strip())
 
     def quit(self):
         self.close()
@@ -129,7 +140,9 @@ class User:
         actions = {
             'REGISTER': self.register,
             'USER'    : self.authenticate,
+            'USERS'   : self.users,
             'USERMSG' : self.send_usermsg,
+            'MSGHIST' : self.message_history,
             'FRIEND'  : self.friend,
             'UNFRIEND': self.unfriend,
             'FRIENDS' : self.friends,
