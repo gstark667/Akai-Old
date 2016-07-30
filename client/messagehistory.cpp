@@ -37,7 +37,6 @@ void MessageHistory::groupSelected(QListWidgetItem *item)
 
 void MessageHistory::sendMessage(QString message)
 {
-    sentUserMessage(m_currentFriend, message);
     emit sendUserMessage(m_currentFriend, message);
 }
 

@@ -20,10 +20,14 @@ private slots:
 public slots:
     void login(QString username, QString password);
     void sendUserMessage(QString user, QString message);
+    void listUsers();
+    void listFriends();
+    void addFriend(QString name);
 
 signals:
     void recvUserMessage(QString user, QString message);
     void sentUserMessage(QString user, QString message);
 
     void updateFriends(QStringList friends);
+    void updateUsers(QStringList friends);
 };

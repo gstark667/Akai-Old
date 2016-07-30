@@ -41,11 +41,7 @@ void MessageList::updateFriends(QStringList friends)
     std::cout << "Updating friends" << std::endl;
     for (int i = 0; i < friends.size(); ++i)
     {
-        if (m_friendsList->findItems(friends[i], Qt::MatchExactly).size() == 0)
-        {
-            std::cout << friends[i].toStdString() << std::endl;
-            m_friendsList->addItem(friends[i]);
-        }
+        addFriend(friends[i]);
     }
 }
 
@@ -55,19 +51,32 @@ void MessageList::updateGroups(QStringList groups)
     std::cout << "Updating groups" << std::endl;
     for (int i = 0; i < groups.size(); ++i)
     {
-        std::cout << groups[i].toStdString() << std::endl;
-        m_groupsList->addItem(groups[i]);
+        addGroup(groups[i]);
     }
 }
 
 
 void MessageList::addFriend(QString user)
 {
+    if (user.size() == 0)
+        return;
+    for (int i = 0; i < m_friendsList->count(); ++i)
+    {
+        if (m_friendsList->item(i)->text() == user)
+            return;
+    }
     m_friendsList->addItem(user);
 }
 
 
-void MessageList::addGroup(QString user)
+void MessageList::addGroup(QString group)
 {
-    m_groupsList->addItem(user);
+    if (group.size() == 0)
+        return;
+    for (int i = 0; i < m_groupsList->count(); ++i)
+    {
+        if (m_friendsList->item(i)->text() == group)
+            return;
+    }
+    m_friendsList->addItem(group);
 }

@@ -20,8 +20,9 @@ void Network::login(QString username, QString password)
 {
     connectToHost("162.243.175.235", 6667);
     waitForConnected();
-    sendMessage("USER " + username + " " + password + "\r\n");
-    sendMessage("FRIENDS\r\n");
+    sendMessage("USER " + username + " " + password);
+    sendMessage("FRIENDS");
+    sendMessage("MSGHIST");
 }
 
 
@@ -37,6 +38,7 @@ void Network::readMessage()
 void Network::sendMessage(QString message)
 {
     std::cout << "Sending: " << message.toStdString() << std::endl;
+    message += "\r\n";
     write(message.toStdString().c_str());
     flush();
 }
@@ -45,7 +47,25 @@ void Network::sendMessage(QString message)
 void Network::sendUserMessage(QString user, QString message)
 {
     std::cout << "Sending " + message.toStdString() + " to " + user.toStdString() << std::endl;
-    sendMessage("USERMSG " + user + " :" + message + "\r\n");
+    sendMessage("USERMSG " + user + " :" + message);
+}
+
+
+void Network::listUsers()
+{
+    sendMessage("USERS");
+}
+
+
+void Network::listFriends()
+{
+    sendMessage("FRIENDS");
+}
+
+
+void Network::addFriend(QString name)
+{
+    sendMessage("FRIEND " + name);
 }
 
 
@@ -93,5 +113,9 @@ void Network::handleMessage(QString message)
     {
         std::cout << "Network got userlist" << std::endl;
         emit updateFriends(argv[1].simplified().split(" "));
+    }
+    else if (argv[0] == "USERS" && argc == 2)
+    {
+        emit updateUsers(argv[1].simplified().split(" "));
     }
 }

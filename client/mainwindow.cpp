@@ -74,6 +74,7 @@ void MainWindow::setupUI()
     retranslateUI();
 
     m_loginDialog = new LoginDialog(this);
+    m_addFriendDialog = new AddFriendDialog(this);
     m_network     = new Network();
     connect(m_loginDialog, &LoginDialog::login, m_network, &Network::login);
 
@@ -85,6 +86,13 @@ void MainWindow::setupUI()
     connect(m_messageList, &MessageList::friendSelected, m_messageHistory, &MessageHistory::friendSelected);
     connect(m_messageHistory, &MessageHistory::addUser, m_messageList, &MessageList::addFriend);
     connect(m_network, &Network::updateFriends, m_messageList, &MessageList::updateFriends);
+
+    connect(addFriendAction, &QAction::triggered, m_addFriendDialog, &AddFriendDialog::show);
+    connect(m_network, &Network::updateUsers, m_addFriendDialog, &AddFriendDialog::updateUsers);
+    connect(m_network, &Network::updateFriends, m_addFriendDialog, &AddFriendDialog::updateFriends);
+    connect(m_addFriendDialog, &AddFriendDialog::listUsers, m_network, &Network::listUsers);
+    connect(m_addFriendDialog, &AddFriendDialog::listFriends, m_network, &Network::listFriends);
+    connect(m_addFriendDialog, &AddFriendDialog::addFriend, m_network, &Network::addFriend);
 
     m_loginDialog->show();
 }

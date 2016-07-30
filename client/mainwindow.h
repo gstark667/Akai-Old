@@ -28,6 +28,7 @@
 #include "messageinput.h"
 #include "messagehistory.h"
 #include "logindialog.h"
+#include "addfrienddialog.h"
 #include "network.h"
 
 
@@ -52,6 +53,7 @@ private:
     QStatusBar *statusbar;
 
     LoginDialog *m_loginDialog;
+    AddFriendDialog *m_addFriendDialog;
     Network *m_network;
 
 public:
