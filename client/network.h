@@ -15,7 +15,7 @@ public:
     void sendMessage(QString message);
 
 private slots:
-    void readMessage();
+    void readMessages();
 
 public slots:
     void login(QString username, QString password);

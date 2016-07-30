@@ -5,6 +5,7 @@
 TEMPLATE = app
 TARGET = Akai
 INCLUDEPATH += .
+RC_ICONS += icons/akai.svg
 
 # Input
 HEADERS += addfrienddialog.h \
@@ -13,7 +14,8 @@ HEADERS += addfrienddialog.h \
            mainwindow.h \
            messagehistory.h \
            messageinput.h \
-           network.h
+           network.h \
+           audio.h
 SOURCES += addfrienddialog.cpp \
            messagelist.cpp \
            logindialog.cpp \
@@ -21,7 +23,8 @@ SOURCES += addfrienddialog.cpp \
            mainwindow.cpp \
            messagehistory.cpp \
            messageinput.cpp \
-           network.cpp
-LIBS += -lQt5Widgets -lQt5Network
+           network.cpp \
+           audio.cpp
+LIBS += -lQt5Widgets -lQt5Network -lQt5Multimedia
 OBJECTS_DIR=objects
 MOC_DIR=objects

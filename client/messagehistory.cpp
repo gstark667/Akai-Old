@@ -48,8 +48,7 @@ void MessageHistory::recvUserMessage(QString user, QString message)
         emit addUser(user);
     }
 
-    m_userMessages[user] += ("<p class='recv-message'>" + message + "</p>");
-    //m_messageBuffer.push_back("<p class='recv-message'>" + message + "</p>");
+    m_userMessages[user] += ("<p class='recv-message'>" + message.toHtmlEscaped() + "</p>");
     if (user == m_currentFriend)
         updateMessages();
 }
@@ -62,8 +61,7 @@ void MessageHistory::sentUserMessage(QString user, QString message)
         emit addUser(user);
     }
 
-    m_userMessages[user] += ("<p class='sent-message'>" + message + "</p>");
-    //m_messageBuffer.push_back("<p class='recv-message'>" + message + "</p>");
+    m_userMessages[user] += ("<p class='sent-message'>" + message.toHtmlEscaped() + "</p>");
     if (user == m_currentFriend)
         updateMessages();
 }

@@ -6,13 +6,13 @@
 
 Network::Network(): QTcpSocket()
 {
-    connect(this, SIGNAL(readyRead()), SLOT(readMessage()));
+    connect(this, &QTcpSocket::readyRead, this, &Network::readMessages);
 }
 
 
 Network::~Network()
 {
-
+    close();
 }
 
 
@@ -26,7 +26,7 @@ void Network::login(QString username, QString password)
 }
 
 
-void Network::readMessage()
+void Network::readMessages()
 {
     QTextStream stream(this);
     QStringList messages = stream.readAll().split("\r\n");

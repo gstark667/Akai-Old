@@ -20,6 +20,8 @@ MainWindow::~MainWindow()
     delete m_messageSplit;
     delete m_messageHistory;
     delete m_messageInput;
+    delete m_network;
+    delete m_audio;
     delete menubar;
     delete friendsMenu;
     delete chatsMenu;
@@ -76,6 +78,7 @@ void MainWindow::setupUI()
     m_loginDialog = new LoginDialog(this);
     m_addFriendDialog = new AddFriendDialog(this);
     m_network     = new Network();
+    m_audio       = new Audio();
     connect(m_loginDialog, &LoginDialog::login, m_network, &Network::login);
 
     connect(m_messageInput, &MessageInput::sendMessage, m_messageHistory, &MessageHistory::sendMessage);
