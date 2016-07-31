@@ -18,11 +18,11 @@ Audio::Audio(): QObject()
     init();
 
     m_input = new QAudioInput(*m_format);
-    m_input->setBufferSize(4096);
+    m_input->setBufferSize(44100);
     m_inputDevice = m_input->start();
 
     m_output = new QAudioOutput(*m_format);
-    m_output->setBufferSize(4096);
+    m_output->setBufferSize(44100);
     m_outputDevice = m_output->start();
 
     connect(m_sock, &QUdpSocket::readyRead, this, &Audio::readDatagrams);
@@ -70,7 +70,7 @@ void Audio::readDatagrams()
 
 void Audio::writeDatagrams()
 {
-    QByteArray datagram = m_inputDevice->read(4096);
+    QByteArray datagram = m_inputDevice->read(44100);
     m_sock->writeDatagram(datagram, QHostAddress::LocalHost, 6669);
 }
 
