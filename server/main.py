@@ -16,7 +16,7 @@ if __name__ == '__main__':
         for item in read:
             if item == server:
                 newsock, addr = item.accept()
-                users.append(User(newsock))
+                users.append(User(newsock, addr))
                 print('User connected')
             else:
                 if not item.recv():

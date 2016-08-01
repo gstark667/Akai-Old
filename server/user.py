@@ -27,9 +27,10 @@ def split_message(message):
 
 
 class User:
-    def __init__(self, sock):
+    def __init__(self, sock, addr):
         self.sock = sock
         self.sock.setblocking(False)
+        self.addr = addr
         self.name = None
         self.buff = ''
 
@@ -120,6 +121,15 @@ class User:
             message += friend + ' '
         self.send_message(message.strip())
 
+    def call(self, name, addr, port):
+        if not database.is_friend(self.name, name):
+            raise UserException('User "%s" is not your friend' % (self.name))
+        self.send_message('CALL %s %s %s' % (name, addr, port))
+
+    def send_call(self, name, port):
+        user = get_user(name)
+        user.call(self.name, self.addr[0], port)
+
     def users(self):
         users = database.list_users()
         message = 'USERS :'
@@ -146,6 +156,7 @@ class User:
             'FRIEND'  : self.friend,
             'UNFRIEND': self.unfriend,
             'FRIENDS' : self.friends,
+            'CALL'    : self.send_call,
             'QUIT'    : self.quit
         }
 
