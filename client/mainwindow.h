@@ -3,6 +3,7 @@
 
 #include <QtCore/QVariant>
 #include <QtGui/QKeyEvent>
+#include <QtNetwork/QHostAddress>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
@@ -40,9 +41,9 @@ class MainWindow: public QMainWindow
 private:
     QAction *addFriendAction;
     QAction *createChatAction;
-    QWidget *m_chatWidget;
+    QWidget *m_messageWidget;
     QGridLayout *m_gridLayout;
-    QSplitter *m_chatSplit;
+    QSplitter *m_mainSplit;
     MessageList *m_messageList;
     QSplitter *m_messageSplit;
     MessageHistory *m_messageHistory;
@@ -59,7 +60,7 @@ private:
     Audio *m_audio;
 
 public:
-    MainWindow();
+    MainWindow(QHostAddress serverHost, qint16 serverPort);
     ~MainWindow();
 
     void setupUI();

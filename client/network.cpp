@@ -4,8 +4,10 @@
 #include <stdlib.h>
 
 
-Network::Network(): QTcpSocket()
+Network::Network(QHostAddress serverHost, qint16 serverPort, QObject *parent): QTcpSocket(parent)
 {
+    m_serverHost = serverHost;
+    m_serverPort = serverPort;
     connect(this, &QTcpSocket::readyRead, this, &Network::readMessages);
 }
 
@@ -18,7 +20,7 @@ Network::~Network()
 
 void Network::login(QString username, QString password)
 {
-    connectToHost("162.243.175.235", 6667);
+    connectToHost(m_serverHost, m_serverPort);
     waitForConnected();
     sendMessage("USER " + username + " " + password);
     sendMessage("FRIENDS");

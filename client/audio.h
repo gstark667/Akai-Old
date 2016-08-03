@@ -22,13 +22,20 @@ private:
 
     QAudioOutput *m_output;
     QIODevice    *m_outputDevice;
-    QByteArray   m_buffer;
+    QByteArray    m_buffer;
+
+    QHostAddress  m_peerAddress;
+    quint16       m_peerPort;
 
 public:
-    Audio();
+    Audio(QObject *parent);
     ~Audio();
 
-    void init();
+    void init(QHostAddress peerAddress, quint16 peerPort);
+    void start();
+    void stop();
+
+    quint16 getPort();
 
 private slots:
     void readDatagrams();

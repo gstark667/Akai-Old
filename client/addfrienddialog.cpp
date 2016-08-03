@@ -11,10 +11,6 @@ AddFriendDialog::AddFriendDialog(QWidget *parent): QDialog(parent)
 
 AddFriendDialog::~AddFriendDialog()
 {
-    delete m_gridLayout;
-    delete m_userList;
-    delete m_addFriendButton;
-    delete m_closeButton;
 }
 
 

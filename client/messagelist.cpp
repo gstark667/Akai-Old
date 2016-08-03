@@ -11,8 +11,6 @@ MessageList::MessageList(QWidget *parent): QTabWidget(parent)
 
 MessageList::~MessageList()
 {
-    delete m_friendsList;
-    delete m_groupsList;
 }
 
 

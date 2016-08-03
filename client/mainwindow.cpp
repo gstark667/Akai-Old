@@ -3,30 +3,16 @@
 #include "mainwindow.h"
 
 
-MainWindow::MainWindow()
+MainWindow::MainWindow(QHostAddress serverHost, qint16 serverPort)
 {
+    m_network = new Network(serverHost, serverPort, this);
+    m_audio   = new Audio(this);
     setupUI();
 }
 
 
 MainWindow::~MainWindow()
 {
-    delete addFriendAction;
-    delete createChatAction;
-    delete m_chatWidget;
-    delete m_gridLayout;
-    delete m_chatSplit;
-    delete m_messageList;
-    delete m_messageSplit;
-    delete m_messageHistory;
-    delete m_messageInput;
-    delete m_network;
-    delete m_audio;
-    delete menubar;
-    delete friendsMenu;
-    delete chatsMenu;
-    delete menuOptions;
-    delete statusbar;
 }
 
 
@@ -38,27 +24,27 @@ void MainWindow::setupUI()
     addFriendAction = new QAction(this);
     createChatAction = new QAction(this);
 
-    m_chatWidget = new QWidget(this);
-    m_gridLayout = new QGridLayout(m_chatWidget);
+    m_messageWidget = new QWidget(this);
+    m_gridLayout = new QGridLayout(m_messageWidget);
 
-    m_chatSplit = new QSplitter(m_chatWidget);
-    m_chatSplit->setOrientation(Qt::Horizontal);
+    m_mainSplit = new QSplitter(m_messageWidget);
+    m_mainSplit->setOrientation(Qt::Horizontal);
 
-    m_messageList = new MessageList(m_chatSplit);
+    m_messageList = new MessageList(m_mainSplit);
 
-    m_chatSplit->addWidget(m_messageList);
+    m_mainSplit->addWidget(m_messageList);
 
-    m_messageSplit = new QSplitter(m_chatSplit);
+    m_messageSplit = new QSplitter(m_mainSplit);
     m_messageSplit->setOrientation(Qt::Vertical);
     m_messageHistory = new MessageHistory(m_messageSplit);
     m_messageSplit->addWidget(m_messageHistory);
     m_messageInput = new MessageInput(m_messageSplit);
     m_messageSplit->addWidget(m_messageInput);
-    m_chatSplit->addWidget(m_messageSplit);
+    m_mainSplit->addWidget(m_messageSplit);
 
-    m_gridLayout->addWidget(m_chatSplit, 0, 0, 1, 1);
+    m_gridLayout->addWidget(m_mainSplit, 0, 0, 1, 1);
 
-    setCentralWidget(m_chatWidget);
+    setCentralWidget(m_messageWidget);
     menubar = new QMenuBar(this);
     friendsMenu = new QMenu(menubar);
     chatsMenu = new QMenu(menubar);
@@ -77,8 +63,6 @@ void MainWindow::setupUI()
 
     m_loginDialog = new LoginDialog(this);
     m_addFriendDialog = new AddFriendDialog(this);
-    m_network     = new Network();
-    m_audio       = new Audio();
     connect(m_loginDialog, &LoginDialog::login, m_network, &Network::login);
 
     connect(m_messageInput, &MessageInput::sendMessage, m_messageHistory, &MessageHistory::sendMessage);

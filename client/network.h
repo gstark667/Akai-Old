@@ -1,14 +1,17 @@
 #include <QtCore/QThread>
 #include <QtNetwork/QTcpSocket>
+#include <QtNetwork/QHostAddress>
 
 
 class Network: public QTcpSocket
 {
     Q_OBJECT
 private:
+    QHostAddress m_serverHost;
+    qint16       m_serverPort;
 
 public:
-    Network();
+    Network(QHostAddress serverHost, qint16 serverPort, QObject *parent);
     ~Network();
     void handleMessage(QString message);
     QStringList splitMessage(QString message);
