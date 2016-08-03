@@ -29,3 +29,8 @@ QMAKE_CXXFLAGS += -g
 LIBS += -lQt5Widgets -lQt5Network -lQt5Multimedia
 OBJECTS_DIR=objects
 MOC_DIR=objects
+
+unix:application.path = ~/.local/share/akai
+unix:application.files = Akai
+
+INSTALLS += application
