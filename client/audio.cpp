@@ -17,9 +17,13 @@ Audio::Audio(QObject *parent): QObject(parent)
 
     m_input = new QAudioInput(*m_format);
     m_input->setBufferSize(16000);
+    m_inputDevice = nullptr;
 
     m_output = new QAudioOutput(*m_format);
     m_output->setBufferSize(16000);
+    m_outputDevice = nullptr;
+
+    m_isListen = false;
 
 }
 
@@ -29,35 +33,6 @@ Audio::~Audio()
     delete m_format;
     delete m_input;
     delete m_output;
-}
-
-
-void Audio::init(QHostAddress peerAddress, quint16 peerPort)
-{
-    m_sock->bind(QHostAddress::Broadcast, 0, QUdpSocket::DontShareAddress);
-    std::cout << m_sock->localPort() << std::endl;
-    m_peerAddress = peerAddress;
-    m_peerPort = peerPort;
-}
-
-void Audio::start()
-{
-    m_inputDevice = m_input->start();
-    m_outputDevice = m_output->start();
-
-    connect(m_sock, &QUdpSocket::readyRead, this, &Audio::readDatagrams);
-    connect(m_inputDevice, &QIODevice::readyRead, this, &Audio::writeDatagrams);
-}
-
-
-void Audio::stop()
-{
-    disconnect(m_sock, &QUdpSocket::readyRead, this, &Audio::readDatagrams);
-    disconnect(m_inputDevice, &QIODevice::readyRead, this, &Audio::writeDatagrams);
-
-    m_sock->close();
-    m_outputDevice->close();
-    m_inputDevice->close();
 }
 
 
@@ -93,3 +68,49 @@ void Audio::writeDatagrams()
     m_sock->writeDatagram(datagram, m_peerAddress, m_peerPort);
 }
 
+
+void Audio::startListen(QString name)
+{
+    if (m_isListen)
+        return; // TODO error message to show that you're already in a call
+    m_sock->bind(QHostAddress::Broadcast, 0, QUdpSocket::DontShareAddress);
+    m_isListen = true;
+    emit callFriend(name, getPort());
+}
+
+
+void Audio::startCall(QHostAddress peerAddress, quint16 peerPort)
+{
+    m_peerAddress = peerAddress;
+    m_peerPort = peerPort;
+
+    m_inputDevice = m_input->start();
+    m_outputDevice = m_output->start();
+
+    connect(m_sock, &QUdpSocket::readyRead, this, &Audio::readDatagrams);
+    connect(m_inputDevice, &QIODevice::readyRead, this, &Audio::writeDatagrams);
+}
+
+
+void Audio::stopCall()
+{
+    if (m_isListen)
+    {
+        disconnect(m_sock, &QUdpSocket::readyRead, this, &Audio::readDatagrams);
+        m_sock->close();
+        m_isListen = false;
+    }
+
+    if (m_outputDevice)
+    {
+        m_outputDevice->close();
+        m_outputDevice = nullptr;
+    }
+
+    if (m_inputDevice)
+    {
+        disconnect(m_inputDevice, &QIODevice::readyRead, this, &Audio::writeDatagrams);
+        m_inputDevice->close();
+        m_inputDevice = nullptr;
+    }
+}

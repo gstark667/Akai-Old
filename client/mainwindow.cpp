@@ -23,6 +23,7 @@ void MainWindow::setupUI()
 
     addFriendAction = new QAction(this);
     createChatAction = new QAction(this);
+    stopCallAction = new QAction(this);
 
     m_messageWidget = new QWidget(this);
     m_gridLayout = new QGridLayout(m_messageWidget);
@@ -48,6 +49,7 @@ void MainWindow::setupUI()
     menubar = new QMenuBar(this);
     friendsMenu = new QMenu(menubar);
     chatsMenu = new QMenu(menubar);
+    callMenu = new QMenu(menubar);
     menuOptions = new QMenu(menubar);
     setMenuBar(menubar);
     statusbar = new QStatusBar(this);
@@ -55,9 +57,11 @@ void MainWindow::setupUI()
 
     menubar->addAction(friendsMenu->menuAction());
     menubar->addAction(chatsMenu->menuAction());
+    menubar->addAction(callMenu->menuAction());
     menubar->addAction(menuOptions->menuAction());
     friendsMenu->addAction(addFriendAction);
     chatsMenu->addAction(createChatAction);
+    callMenu->addAction(stopCallAction);
 
     retranslateUI();
 
@@ -81,6 +85,13 @@ void MainWindow::setupUI()
     connect(m_addFriendDialog, &AddFriendDialog::listFriends, m_network, &Network::listFriends);
     connect(m_addFriendDialog, &AddFriendDialog::addFriend, m_network, &Network::addFriend);
 
+    connect(m_messageList, &MessageList::callFriend, m_audio, &Audio::startListen);
+    connect(m_audio, &Audio::callFriend, m_network, &Network::callFriend);
+    connect(m_messageList, &MessageList::removeFriend, m_network, &Network::removeFriend);
+    // TODO there needs to be a middleman here where the user accepts or decline's the call
+    connect(m_network, &Network::callRequested, m_audio, &Audio::startCall);
+    connect(stopCallAction, &QAction::triggered, m_audio, &Audio::stopCall);
+
     m_loginDialog->show();
 }
 
@@ -90,7 +101,9 @@ void MainWindow::retranslateUI()
     setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
     addFriendAction->setText(QApplication::translate("MainWindow", "Add Friend", 0));
     createChatAction->setText(QApplication::translate("MainWindow", "Create Chat", 0));
+    stopCallAction->setText(QApplication::translate("MainWindow", "Stop Call", 0));
     friendsMenu->setTitle(QApplication::translate("MainWindow", "&Friends", 0));
     chatsMenu->setTitle(QApplication::translate("MainWindow", "&Chats", 0));
+    callMenu->setTitle(QApplication::translate("MainWindow", "&Call", 0));
     menuOptions->setTitle(QApplication::translate("MainWindow", "Options", 0));
 }

@@ -71,6 +71,19 @@ void Network::addFriend(QString name)
 }
 
 
+void Network::callFriend(QString name, quint16 port)
+{
+    sendMessage("CALL " + name + " " + QString::number(port));
+    std::cout << "calling " << name.toStdString() << std::endl;
+}
+
+
+void Network::removeFriend(QString name)
+{
+    sendMessage("UNFRIEND " + name);
+}
+
+
 QStringList Network::splitMessage(QString message)
 {
     QStringList split = message.split(" ");
@@ -119,5 +132,9 @@ void Network::handleMessage(QString message)
     else if (argv[0] == "USERS" && argc == 2)
     {
         emit updateUsers(argv[1].simplified().split(" "));
+    }
+    else if (argv[0] == "CALL" && argc == 4)
+    {
+        emit callRequested(QHostAddress(argv[2]), argv[3].toInt());
     }
 }

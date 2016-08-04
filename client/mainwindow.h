@@ -41,6 +41,7 @@ class MainWindow: public QMainWindow
 private:
     QAction *addFriendAction;
     QAction *createChatAction;
+    QAction *stopCallAction;
     QWidget *m_messageWidget;
     QGridLayout *m_gridLayout;
     QSplitter *m_mainSplit;
@@ -51,6 +52,7 @@ private:
     QMenuBar *menubar;
     QMenu *friendsMenu;
     QMenu *chatsMenu;
+    QMenu *callMenu;
     QMenu *menuOptions;
     QStatusBar *statusbar;
 

@@ -26,6 +26,8 @@ public slots:
     void listUsers();
     void listFriends();
     void addFriend(QString name);
+    void callFriend(QString name, quint16 port);
+    void removeFriend(QString name);
 
 signals:
     void recvUserMessage(QString user, QString message);
@@ -33,4 +35,6 @@ signals:
 
     void updateFriends(QStringList friends);
     void updateUsers(QStringList friends);
+
+    void callRequested(QHostAddress peerAddress, quint16 peerPort);
 };

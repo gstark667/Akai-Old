@@ -22,6 +22,26 @@
 #include <QtWidgets/QTabWidget>
 
 
+class FriendMenu: public QMenu
+{
+    Q_OBJECT
+
+private:
+    QString m_friendName;
+
+public:
+    FriendMenu(QString friendName, QWidget *parent);
+
+private slots:
+    void callSelected();
+    void unfriendSelected();
+
+signals:
+    void call(QString name);
+    void unfriend(QString name);
+};
+
+
 class MessageList: public QTabWidget
 {
     Q_OBJECT
@@ -42,8 +62,11 @@ public slots:
     void updateGroups(QStringList groups);
     void addFriend(QString);
     void addGroup(QString);
+    void showFriendMenu(const QPoint &pos);
 
 signals:
     void friendSelected(QListWidgetItem *item);
     void groupSelected(QListWidgetItem *item);
+    void callFriend(QString name);
+    void removeFriend(QString name);
 };

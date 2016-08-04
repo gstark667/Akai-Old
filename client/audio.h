@@ -13,6 +13,8 @@
 
 class Audio: public QObject
 {
+    Q_OBJECT
+
 private:
     QAudioFormat *m_format;
     QUdpSocket   *m_sock;
@@ -27,7 +29,10 @@ private:
     QHostAddress  m_peerAddress;
     quint16       m_peerPort;
 
+    bool          m_isListen;
+
 public:
+
     Audio(QObject *parent);
     ~Audio();
 
@@ -40,6 +45,14 @@ public:
 private slots:
     void readDatagrams();
     void writeDatagrams();
+
+public slots:
+    void startListen(QString name);
+    void startCall(QHostAddress peerAddress, quint16 peerPort);
+    void stopCall();
+
+signals:
+    void callFriend(QString name, quint16 port);
 };
 
 #endif

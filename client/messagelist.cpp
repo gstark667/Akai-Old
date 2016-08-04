@@ -3,6 +3,26 @@
 #include <iostream>
 
 
+FriendMenu::FriendMenu(QString friendName, QWidget *parent): QMenu(parent)
+{
+    m_friendName = friendName;
+    addAction("Call", this, &FriendMenu::callSelected);
+    addAction("Unfriend", this, &FriendMenu::unfriendSelected);
+}
+
+
+void FriendMenu::callSelected()
+{
+    emit call(m_friendName);
+}
+
+
+void FriendMenu::unfriendSelected()
+{
+    emit unfriend(m_friendName);
+}
+
+
 MessageList::MessageList(QWidget *parent): QTabWidget(parent)
 {
     setupUI();
@@ -17,11 +37,14 @@ MessageList::~MessageList()
 void MessageList::setupUI()
 {
     m_friendsList = new QListWidget(this);
+    m_friendsList->setContextMenuPolicy(Qt::CustomContextMenu);
     m_groupsList = new QListWidget(this);
 
     addTab(m_friendsList, "Friends");
     addTab(m_groupsList, "Groups");
 
+
+    connect(m_friendsList, &QListWidget::customContextMenuRequested, this, &MessageList::showFriendMenu);
     connect(m_friendsList, &QListWidget::itemPressed, this, &MessageList::friendSelected);
     connect(m_groupsList, &QListWidget::itemPressed, this, &MessageList::groupSelected);
 }
@@ -77,4 +100,23 @@ void MessageList::addGroup(QString group)
             return;
     }
     m_friendsList->addItem(group);
+}
+
+
+void MessageList::showFriendMenu(const QPoint &pos)
+{
+    QPoint globalPos = m_friendsList->mapToGlobal(pos);
+
+    QListWidgetItem *pointedFriend = m_friendsList->itemAt(pos);
+    if (!pointedFriend)
+        return;
+
+    FriendMenu friendMenu(pointedFriend->text(), this);
+    connect(&friendMenu, &FriendMenu::call, this, &MessageList::callFriend);
+    connect(&friendMenu, &FriendMenu::unfriend, this, &MessageList::removeFriend);
+
+    friendMenu.exec(globalPos);
+
+    friendMenu.disconnect();
+    std::cout << pointedFriend->text().toStdString() << std::endl;
 }
