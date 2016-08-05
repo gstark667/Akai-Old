@@ -81,7 +81,7 @@ void Audio::startListen(QString name)
     std::cout << "STARTING Listen" << std::endl;
     if (m_isListen)
         return; // TODO error message to show that you're already in a call
-    m_sock->bind(QHostAddress("127.0.0.1"), m_port, QUdpSocket::DontShareAddress);
+    m_sock->bind(QHostAddress("0.0.0.0"), m_port, QUdpSocket::DontShareAddress);
     connect(m_sock, &QUdpSocket::readyRead, this, &Audio::readDatagrams);
     std::cout << "Local: " << m_sock->localPort() << " Peer: " << m_sock->peerPort() << std::endl;
     m_isListen = true;
