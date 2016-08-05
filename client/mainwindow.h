@@ -62,7 +62,7 @@ private:
     Audio *m_audio;
 
 public:
-    MainWindow(QHostAddress serverHost, qint16 serverPort);
+    MainWindow(QHostAddress serverHost, qint16 serverPort, qint16 callPort);
     ~MainWindow();
 
     void setupUI();

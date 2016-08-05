@@ -3,8 +3,10 @@
 #include <iostream>
 
 
-Audio::Audio(QObject *parent): QObject(parent)
+Audio::Audio(qint16 port, QObject *parent): QObject(parent)
 {
+    m_port = port;
+
     m_format = new QAudioFormat();
     m_format->setChannelCount(2);
     m_format->setSampleRate(16000);
@@ -51,6 +53,9 @@ void Audio::readDatagrams()
     quint16 senderPort;
 
     m_sock->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
+
+    if (!m_outputDevice)
+        return;
     m_buffer.append(datagram);
 
     while (datagram.size() > 0)
@@ -63,24 +68,30 @@ void Audio::readDatagrams()
 
 void Audio::writeDatagrams()
 {
-    std::cout << "Writing" << std::endl;
+    std::cout << "Writing to: " << m_peerPort << std::endl;
     QByteArray datagram = m_inputDevice->read(16000);
+    if (!m_isListen)
+        return;
     m_sock->writeDatagram(datagram, m_peerAddress, m_peerPort);
 }
 
 
 void Audio::startListen(QString name)
 {
+    std::cout << "STARTING Listen" << std::endl;
     if (m_isListen)
         return; // TODO error message to show that you're already in a call
-    m_sock->bind(QHostAddress::Broadcast, 0, QUdpSocket::DontShareAddress);
+    m_sock->bind(QHostAddress("127.0.0.1"), m_port, QUdpSocket::DontShareAddress);
+    connect(m_sock, &QUdpSocket::readyRead, this, &Audio::readDatagrams);
+    std::cout << "Local: " << m_sock->localPort() << " Peer: " << m_sock->peerPort() << std::endl;
     m_isListen = true;
-    emit callFriend(name, getPort());
+    emit callFriend(name, m_port);
 }
 
 
 void Audio::startCall(QHostAddress peerAddress, quint16 peerPort)
 {
+    std::cout << "STARTING Call" << std::endl;
     m_peerAddress = peerAddress;
     m_peerPort = peerPort;
 

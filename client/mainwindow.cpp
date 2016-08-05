@@ -3,10 +3,10 @@
 #include "mainwindow.h"
 
 
-MainWindow::MainWindow(QHostAddress serverHost, qint16 serverPort)
+MainWindow::MainWindow(QHostAddress serverHost, qint16 serverPort, qint16 callPort)
 {
     m_network = new Network(serverHost, serverPort, this);
-    m_audio   = new Audio(this);
+    m_audio   = new Audio(callPort, this);
     setupUI();
 }
 

@@ -27,13 +27,14 @@ private:
     QByteArray    m_buffer;
 
     QHostAddress  m_peerAddress;
-    quint16       m_peerPort;
+    qint16        m_peerPort;
 
     bool          m_isListen;
+    qint16        m_port;
 
 public:
 
-    Audio(QObject *parent);
+    Audio(qint16 port, QObject *parent);
     ~Audio();
 
     void init(QHostAddress peerAddress, quint16 peerPort);
