@@ -164,11 +164,11 @@ class User:
             if args[0] in actions:
                 actions[args[0]](*(args[1:]))
             else:
-                self.send_message('ERROR: Invalid command')
+                self.send_message('ERROR :Invalid command')
         except TypeError as e:
-            self.send_message('ERROR: Wrong number of arguments')
+            self.send_message('ERROR :Wrong number of arguments')
         except Exception as e:
-            self.send_message('ERROR: ' + str(e))
+            self.send_message('ERROR :' + str(e))
 
     def process_messages(self):
         while '\r\n' in self.buff:

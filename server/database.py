@@ -53,7 +53,7 @@ def authenticate(name, password):
 
 def add_friend(name, friend_name):
     if is_friend(name, friend_name):
-        raise DBException('ERROR: "%s" is already your friend' % (friend_name))
+        raise DBException('ERROR :"%s" is already your friend' % (friend_name))
     user = get_user(name)
     friend = get_user(friend_name)
     db.users.update({'name': name}, {'$push': {'friends': friend['_id']}})
@@ -61,7 +61,7 @@ def add_friend(name, friend_name):
 
 def remove_friend(name, friend_name):
     if not is_friend(name, friend_name):
-        raise DBException('ERROR: "%s" is not your friend' % (friend_name))
+        raise DBException('ERROR :"%s" is not your friend' % (friend_name))
     user = get_user(name)
     friend = get_user(friend_name)
     db.users.update({'name': name}, {'$pull': {'friends': friend['_id']}})
