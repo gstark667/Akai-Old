@@ -42,11 +42,20 @@ class User:
     
     #TODO make the socket non-blocking and recv the entire buffer
     def recv(self):
-        recvd = self.sock.recv(256).decode('utf-8')
-        if len(recvd) == 0:
+        try:
+            recvd = self.sock.recv(256).decode('utf-8')
+            if len(recvd) == 0:
+                return False
+            self.buff += recvd
+            return True
+        except UnicodeDecodeError:
+            print('Unable to decode unicode')
+            self.send_message('ERROR :Invalid unicode')
+            self.buff = ''
+            return True
+        except:
+            self.sock.close()
             return False
-        self.buff += recvd
-        return True
     
     def close(self):
         return self.sock.close()
