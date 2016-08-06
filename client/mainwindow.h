@@ -30,6 +30,7 @@
 #include "messagehistory.h"
 #include "logindialog.h"
 #include "addfrienddialog.h"
+#include "acceptcalldialog.h"
 #include "network.h"
 #include "audio.h"
 
@@ -58,11 +59,12 @@ private:
 
     LoginDialog *m_loginDialog;
     AddFriendDialog *m_addFriendDialog;
+    AcceptCallDialog *m_acceptCallDialog;
     Network *m_network;
     Audio *m_audio;
 
 public:
-    MainWindow(QHostAddress serverHost, qint16 serverPort, qint16 callPort);
+    MainWindow(QHostAddress serverHost, quint16 serverPort, quint16 callPort);
     ~MainWindow();
 
     void setupUI();

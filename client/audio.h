@@ -51,15 +51,15 @@ private:
     AudioWriter  *m_writer;
 
     QHostAddress  m_peerAddress;
-    qint16        m_peerPort;
+    quint16        m_peerPort;
 
     bool          m_isListen;
     QHostAddress  m_broker;
-    qint16        m_port;
+    quint16       m_port;
 
 public:
 
-    Audio(QHostAddress broker, qint16 port, QObject *parent);
+    Audio(QHostAddress broker, quint16 port, QObject *parent);
     ~Audio();
 
     void init(QHostAddress peerAddress, quint16 peerPort);

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 
-Network::Network(QHostAddress serverHost, qint16 serverPort, QObject *parent): QTcpSocket(parent)
+Network::Network(QHostAddress serverHost, quint16 serverPort, QObject *parent): QTcpSocket(parent)
 {
     m_serverHost = serverHost;
     m_serverPort = serverPort;
@@ -135,6 +135,6 @@ void Network::handleMessage(QString message)
     }
     else if (argv[0] == "CALL" && argc == 4)
     {
-        emit callRequested(QHostAddress(argv[2]), argv[3].toInt());
+        emit callRequested(argv[1], QHostAddress(argv[2]), argv[3].toInt());
     }
 }

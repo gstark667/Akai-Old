@@ -8,10 +8,10 @@ class Network: public QTcpSocket
     Q_OBJECT
 private:
     QHostAddress m_serverHost;
-    qint16       m_serverPort;
+    quint16       m_serverPort;
 
 public:
-    Network(QHostAddress serverHost, qint16 serverPort, QObject *parent);
+    Network(QHostAddress serverHost, quint16 serverPort, QObject *parent);
     ~Network();
     void handleMessage(QString message);
     QStringList splitMessage(QString message);
@@ -36,5 +36,5 @@ signals:
     void updateFriends(QStringList friends);
     void updateUsers(QStringList friends);
 
-    void callRequested(QHostAddress peerAddress, quint16 peerPort);
+    void callRequested(QString name, QHostAddress peerAddress, quint16 peerPort);
 };

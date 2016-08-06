@@ -3,7 +3,7 @@
 #include "mainwindow.h"
 
 
-MainWindow::MainWindow(QHostAddress serverHost, qint16 serverPort, qint16 callPort)
+MainWindow::MainWindow(QHostAddress serverHost, quint16 serverPort, quint16 callPort)
 {
     m_network = new Network(serverHost, serverPort, this);
     m_audio   = new Audio(serverHost, callPort, this);
@@ -67,6 +67,7 @@ void MainWindow::setupUI()
 
     m_loginDialog = new LoginDialog(this);
     m_addFriendDialog = new AddFriendDialog(this);
+    m_acceptCallDialog = new AcceptCallDialog(this);
     connect(m_loginDialog, &LoginDialog::login, m_network, &Network::login);
 
     connect(m_messageInput, &MessageInput::sendMessage, m_messageHistory, &MessageHistory::sendMessage);
@@ -89,7 +90,9 @@ void MainWindow::setupUI()
     connect(m_audio, &Audio::callFriend, m_network, &Network::callFriend);
     connect(m_messageList, &MessageList::removeFriend, m_network, &Network::removeFriend);
     // TODO there needs to be a middleman here where the user accepts or decline's the call
-    connect(m_network, &Network::callRequested, m_audio, &Audio::startCall);
+    connect(m_network, &Network::callRequested, m_acceptCallDialog, &AcceptCallDialog::callRequested);
+    connect(m_acceptCallDialog, &AcceptCallDialog::startCall, m_audio, &Audio::startCall);
+    connect(m_acceptCallDialog, &AcceptCallDialog::callFriend, m_audio, &Audio::startListen);
     connect(stopCallAction, &QAction::triggered, m_audio, &Audio::stopCall);
 
     m_loginDialog->show();

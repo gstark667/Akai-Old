@@ -49,7 +49,7 @@ void AudioWriter::stop()
 }
 
 
-Audio::Audio(QHostAddress broker, qint16 port, QObject *parent): QObject(parent)
+Audio::Audio(QHostAddress broker, quint16 port, QObject *parent): QObject(parent)
 {
     m_broker = broker;
     m_port = port;
@@ -105,11 +105,6 @@ void Audio::readDatagrams()
         return;
 
     m_writer->addData(datagram);
-    /*while (datagram.size() > 0)
-    {
-        qint64 i = m_outputDevice->write(datagram.data(), datagram.size());
-        datagram.remove(0, i);
-    }*/
 }
 
 
