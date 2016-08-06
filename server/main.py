@@ -6,6 +6,10 @@ from user import User, users, message_queue
 
 
 if __name__ == '__main__':
+    # this socket is used for the clients to setup their udp connections, nothing else
+    dummy = socket(AF_INET, SOCK_DGRAM)
+    dummy.bind(('', 6668))
+
     server = socket(AF_INET, SOCK_STREAM)
     server.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
     server.bind(('0.0.0.0', 6667))
