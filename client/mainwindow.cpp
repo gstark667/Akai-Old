@@ -70,6 +70,7 @@ void MainWindow::setupUI()
     m_acceptCallDialog = new AcceptCallDialog(this);
 
     connect(m_loginDialog, &LoginDialog::login, m_network, &Network::login);
+    connect(m_network, &Network::isAuth, m_loginDialog, &LoginDialog::close);
 
     connect(m_network, &Network::errorMessage, m_statusBar, &QStatusBar::showMessage);
 

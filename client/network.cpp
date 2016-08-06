@@ -114,7 +114,11 @@ void Network::handleMessage(QString message)
 
     std::cout << message.toStdString() << std::endl;
 
-    if (argv[0] == "USERMSG" && argc == 3)
+    if (argv[0] == "ISAUTH" && argc == 2)
+    {
+        emit isAuth();
+    }
+    else if (argv[0] == "USERMSG" && argc == 3)
     {
         emit recvUserMessage(argv[1], argv[2]);
         std::cout << "Message From '" << argv[1].toStdString() << "' :" << argv[2].toStdString() << std::endl;

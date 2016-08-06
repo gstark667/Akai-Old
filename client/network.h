@@ -30,6 +30,8 @@ public slots:
     void removeFriend(QString name);
 
 signals:
+    void isAuth();
+
     void recvUserMessage(QString user, QString message);
     void sentUserMessage(QString user, QString message);
 

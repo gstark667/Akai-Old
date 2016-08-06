@@ -82,12 +82,10 @@ void LoginDialog::validateLogin()
 {
     std::cout << m_usernameInput->text().toStdString() << std::endl;
     emit login(m_usernameInput->text(), m_passwordInput->text());
-    close();
 }
 
 
 void LoginDialog::cancelLogin()
 {
     emit cancel();
-    close();
 }
