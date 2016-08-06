@@ -52,8 +52,8 @@ void MainWindow::setupUI()
     callMenu = new QMenu(menubar);
     menuOptions = new QMenu(menubar);
     setMenuBar(menubar);
-    statusbar = new QStatusBar(this);
-    setStatusBar(statusbar);
+    m_statusBar = new QStatusBar(this);
+    setStatusBar(m_statusBar);
 
     menubar->addAction(friendsMenu->menuAction());
     menubar->addAction(chatsMenu->menuAction());
@@ -68,7 +68,10 @@ void MainWindow::setupUI()
     m_loginDialog = new LoginDialog(this);
     m_addFriendDialog = new AddFriendDialog(this);
     m_acceptCallDialog = new AcceptCallDialog(this);
+
     connect(m_loginDialog, &LoginDialog::login, m_network, &Network::login);
+
+    connect(m_network, &Network::errorMessage, m_statusBar, &QStatusBar::showMessage);
 
     connect(m_messageInput, &MessageInput::sendMessage, m_messageHistory, &MessageHistory::sendMessage);
     connect(m_messageHistory, &MessageHistory::sendUserMessage, m_network, &Network::sendUserMessage);

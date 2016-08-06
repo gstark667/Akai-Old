@@ -111,10 +111,9 @@ void Network::handleMessage(QString message)
 {
     QStringList argv = splitMessage(message);
     int argc = argv.size();
-    for (int i = 0; i < argc; ++i)
-    {
-        std::cout << argv[i].toStdString() << std::endl;
-    }
+
+    std::cout << message.toStdString() << std::endl;
+
     if (argv[0] == "USERMSG" && argc == 3)
     {
         emit recvUserMessage(argv[1], argv[2]);
@@ -136,5 +135,10 @@ void Network::handleMessage(QString message)
     else if (argv[0] == "CALL" && argc == 4)
     {
         emit callRequested(argv[1], QHostAddress(argv[2]), argv[3].toInt());
+    }
+    else if (argv[0] == "ERROR" && argc == 2)
+    {
+        std::cout << "Error" << std::endl;
+        emit errorMessage(argv[1]);
     }
 }

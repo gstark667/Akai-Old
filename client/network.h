@@ -37,4 +37,6 @@ signals:
     void updateUsers(QStringList friends);
 
     void callRequested(QString name, QHostAddress peerAddress, quint16 peerPort);
+
+    void errorMessage(QString message, int timeout=0);
 };

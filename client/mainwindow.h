@@ -55,7 +55,7 @@ private:
     QMenu *chatsMenu;
     QMenu *callMenu;
     QMenu *menuOptions;
-    QStatusBar *statusbar;
+    QStatusBar *m_statusBar;
 
     LoginDialog *m_loginDialog;
     AddFriendDialog *m_addFriendDialog;
