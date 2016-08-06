@@ -6,7 +6,7 @@
 MainWindow::MainWindow(QHostAddress serverHost, qint16 serverPort, qint16 callPort)
 {
     m_network = new Network(serverHost, serverPort, this);
-    m_audio   = new Audio(callPort, this);
+    m_audio   = new Audio(serverHost, callPort, this);
     setupUI();
 }
 

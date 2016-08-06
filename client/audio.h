@@ -30,11 +30,12 @@ private:
     qint16        m_peerPort;
 
     bool          m_isListen;
+    QHostAddress  m_broker;
     qint16        m_port;
 
 public:
 
-    Audio(qint16 port, QObject *parent);
+    Audio(QHostAddress broker, qint16 port, QObject *parent);
     ~Audio();
 
     void init(QHostAddress peerAddress, quint16 peerPort);

@@ -3,8 +3,9 @@
 #include <iostream>
 
 
-Audio::Audio(qint16 port, QObject *parent): QObject(parent)
+Audio::Audio(QHostAddress broker, qint16 port, QObject *parent): QObject(parent)
 {
+    m_broker = broker;
     m_port = port;
 
     m_format = new QAudioFormat();
@@ -81,11 +82,12 @@ void Audio::startListen(QString name)
     std::cout << "STARTING Listen" << std::endl;
     if (m_isListen)
         return; // TODO error message to show that you're already in a call
-    m_sock->bind(QHostAddress::Broadcast, m_port, QUdpSocket::DontShareAddress);
+    m_sock->writeDatagram("Hello World", m_broker, m_port);
+    //m_sock->bind(QHostAddress::Broadcast, m_port, QUdpSocket::DontShareAddress);
     connect(m_sock, &QUdpSocket::readyRead, this, &Audio::readDatagrams);
     std::cout << "Local: " << m_sock->localPort() << " Peer: " << m_sock->peerPort() << std::endl;
     m_isListen = true;
-    emit callFriend(name, m_port);
+    emit callFriend(name, m_sock->localPort());
 }
 
 
