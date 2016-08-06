@@ -3,6 +3,52 @@
 #include <iostream>
 
 
+AudioWriter::AudioWriter(QIODevice *outputDevice)
+{
+    m_outputDevice = outputDevice;
+    m_stop = false;
+}
+
+
+void AudioWriter::run()
+{
+    QMutex mutex;
+    while (true)
+    {
+        mutex.lock();
+        m_wait.wait(&mutex);
+        mutex.unlock();
+        if (m_stop)
+            return;
+        m_mutex.lock();
+        m_data.append(m_buffer);
+        m_buffer.clear();
+        m_mutex.unlock();
+	while (m_data.size() > 0)
+	{
+	    qint64 i = m_outputDevice->write(m_data.data(), m_data.size());
+	    m_data.remove(0, i);
+	}
+    }
+}
+
+
+void AudioWriter::addData(QByteArray data)
+{
+    m_mutex.lock();
+    m_buffer.append(data);
+    m_mutex.unlock();
+    m_wait.wakeAll();
+}
+
+
+void AudioWriter::stop()
+{
+    m_stop = true;
+    m_wait.wakeAll();
+}
+
+
 Audio::Audio(QHostAddress broker, qint16 port, QObject *parent): QObject(parent)
 {
     m_broker = broker;
@@ -19,11 +65,11 @@ Audio::Audio(QHostAddress broker, qint16 port, QObject *parent): QObject(parent)
     m_sock = new QUdpSocket();
 
     m_input = new QAudioInput(*m_format);
-    m_input->setBufferSize(16000);
+    m_input->setBufferSize(32000);
     m_inputDevice = nullptr;
 
     m_output = new QAudioOutput(*m_format);
-    m_output->setBufferSize(16000);
+    m_output->setBufferSize(32000);
     m_outputDevice = nullptr;
 
     m_isListen = false;
@@ -57,13 +103,13 @@ void Audio::readDatagrams()
 
     if (!m_outputDevice)
         return;
-    m_buffer.append(datagram);
 
-    while (datagram.size() > 0)
+    m_writer->addData(datagram);
+    /*while (datagram.size() > 0)
     {
         qint64 i = m_outputDevice->write(datagram.data(), datagram.size());
         datagram.remove(0, i);
-    }
+    }*/
 }
 
 
@@ -95,10 +141,13 @@ void Audio::startCall(QHostAddress peerAddress, quint16 peerPort)
 {
     std::cout << "STARTING Call" << std::endl;
     m_peerAddress = peerAddress;
+    //m_peerAddress = QHostAddress("127.0.0.1"); I use this for testing with 2 clients on one box
     m_peerPort = peerPort;
 
     m_inputDevice = m_input->start();
     m_outputDevice = m_output->start();
+    m_writer = new AudioWriter(m_outputDevice);
+    m_writer->start();
 
     connect(m_sock, &QUdpSocket::readyRead, this, &Audio::readDatagrams);
     connect(m_inputDevice, &QIODevice::readyRead, this, &Audio::writeDatagrams);
@@ -123,6 +172,9 @@ void Audio::stopCall()
     if (m_inputDevice)
     {
         disconnect(m_inputDevice, &QIODevice::readyRead, this, &Audio::writeDatagrams);
+        m_writer->stop();
+        delete m_writer;
+        m_writer = nullptr;
         m_inputDevice->close();
         m_inputDevice = nullptr;
     }

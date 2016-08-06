@@ -1,6 +1,10 @@
 #ifndef H_AUDIO
 #define H_AUDIO
 
+#include <QtCore/QWaitCondition>
+#include <QtCore/QThread>
+#include <QtCore/QMutex>
+#include <QtCore/QIODevice>
 #include <QtCore/QObject>
 #include <QtCore/QBuffer>
 #include <QtCore/QIODevice>
@@ -9,6 +13,26 @@
 #include <QtMultimedia/QAudioFormat>
 #include <QtMultimedia/QAudioInput>
 #include <QtMultimedia/QAudioOutput>
+
+
+class AudioWriter: public QThread
+{
+private:
+    QIODevice     *m_outputDevice;
+    QWaitCondition m_wait;
+    QMutex         m_mutex;
+    QByteArray     m_buffer;
+    QByteArray     m_data;
+
+    bool           m_stop;
+
+public:
+    AudioWriter(QIODevice *outputDevice);
+
+    void run();
+    void addData(QByteArray data);
+    void stop();
+};
 
 
 class Audio: public QObject
@@ -24,7 +48,7 @@ private:
 
     QAudioOutput *m_output;
     QIODevice    *m_outputDevice;
-    QByteArray    m_buffer;
+    AudioWriter  *m_writer;
 
     QHostAddress  m_peerAddress;
     qint16        m_peerPort;
