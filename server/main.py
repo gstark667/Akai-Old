@@ -4,19 +4,22 @@ from socket import *
 import ssl
 
 from user import User, users, message_queue
+import config
 
 
 if __name__ == '__main__':
+    conf = config.get_config()
+
     # this socket is used for the clients to setup their udp connections, nothing else
     dummy = socket(AF_INET, SOCK_DGRAM)
-    dummy.bind(('', 6668))
+    dummy.bind(('', conf['udp_port']))
 
     server = ssl.wrap_socket(socket(AF_INET, SOCK_STREAM),
                              server_side=True,
-                             certfile="server.crt",
-                             keyfile="server.key")
+                             certfile=conf['cert_path'],
+                             keyfile=conf['key_path'])
     server.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-    server.bind(('0.0.0.0', 6667))
+    server.bind(('0.0.0.0', conf['port']))
     server.listen(5)
 
     while True:
