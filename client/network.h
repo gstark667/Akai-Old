@@ -1,9 +1,11 @@
 #include <QtCore/QThread>
+#include <QtCore/QSettings>
 #include <QtNetwork/QTcpSocket>
+#include <QtNetwork/QSslSocket>
 #include <QtNetwork/QHostAddress>
 
 
-class Network: public QTcpSocket
+class Network: public QSslSocket
 {
     Q_OBJECT
 private:

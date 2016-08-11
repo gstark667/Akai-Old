@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 
-Network::Network(QHostAddress serverHost, quint16 serverPort, QObject *parent): QTcpSocket(parent)
+Network::Network(QHostAddress serverHost, quint16 serverPort, QObject *parent): QSslSocket(parent)
 {
     m_serverHost = serverHost;
     m_serverPort = serverPort;
@@ -20,8 +20,12 @@ Network::~Network()
 
 void Network::login(QString username, QString password)
 {
-    connectToHost(m_serverHost, m_serverPort);
+    //connectToHost(m_serverHost, m_serverPort);
+    QSettings settings;
+    addCaCertificates(settings.value("cert_path").toString());
+    connectToHostEncrypted(m_serverHost.toString(), m_serverPort);
     waitForConnected();
+    // TODO add some connection error message to the status bar
     sendMessage("USER " + username + " " + password);
     sendMessage("FRIENDS");
     sendMessage("MSGHIST");
@@ -41,7 +45,7 @@ void Network::sendMessage(QString message)
 {
     std::cout << "Sending: " << message.toStdString() << std::endl;
     message += "\r\n";
-    write(message.toStdString().c_str());
+    writeData(message.toStdString().c_str(), message.size());
     flush();
 }
 
