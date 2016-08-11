@@ -1,4 +1,5 @@
 import database
+import ssl
 
 
 users = []
@@ -43,19 +44,26 @@ class User:
     #TODO make the socket non-blocking and recv the entire buffer
     def recv(self):
         try:
-            recvd = self.sock.recv(256).decode('utf-8')
-            if len(recvd) == 0:
+            data = self.sock.recv(1024)
+        except ssl.SSLError as e:
+            if e.erno != ssl.SSL_ERROR_WANT_READ:
                 return False
-            self.buff += recvd
             return True
-        except UnicodeDecodeError:
-            print('Unable to decode unicode')
-            self.send_message('ERROR :Invalid unicode')
-            self.buff = ''
-            return True
-        except:
-            self.sock.close()
+
+        if not data:
             return False
+
+        data_left = self.sock.pending()
+        while data_left:
+            data += self.sock.recv(data_left)
+            data_left = self.sock.pending()
+
+        try:
+            self.buff += data.decode('utf-8')
+        except UnicodeDecodeError:
+            self.send_message('ERROR :Invalid unicode')
+
+        return True
     
     def close(self):
         return self.sock.close()

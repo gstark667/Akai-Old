@@ -14,8 +14,7 @@ if __name__ == '__main__':
     server = ssl.wrap_socket(socket(AF_INET, SOCK_STREAM),
                              server_side=True,
                              certfile="server.crt",
-                             keyfile="server.key",
-                             ssl_version=ssl.PROTOCOL_TLSv1_2)
+                             keyfile="server.key")
     server.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
     server.bind(('0.0.0.0', 6667))
     server.listen(5)
@@ -29,6 +28,7 @@ if __name__ == '__main__':
                 print('User connected')
             else:
                 if not item.recv():
+                    print('User disconnected')
                     users.remove(item)
                 item.process_messages()
         #TODO make this multithreaded
