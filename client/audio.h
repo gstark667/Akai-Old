@@ -89,7 +89,6 @@ public:
 
 private slots:
     void readDatagrams();
-    void writeDatagrams();
 
 public slots:
     void startListen(QString name);

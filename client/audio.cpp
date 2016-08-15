@@ -24,13 +24,18 @@ void AudioWriter::run()
         m_data.append(m_buffer);
         m_buffer.clear();
         m_mutex.unlock();
-	while (m_data.size() > 4096)
+        std::cout << "One" << std::endl;
+	while (m_data.size() > 0)
 	{
-	    qint64 i = m_outputDevice->write(m_data.data(), 4096);
+            //TODO this method is comsuming lots of cpu, it will write once, then loop through 
+            //     really fast writing 0 bytes each time since the buffer gets full
+            //     idealy we should wait until the data has been written before we try again
+	    qint64 i = m_outputDevice->write(m_data.data(), m_data.size());
+            std::cout << "Two: " << i << std::endl;
 	    m_data.remove(0, i);
 	}
     }
-    std::cout << "Stop finished" << std::endl;
+    std::cout << "Writer finished" << std::endl;
     exit(0);
 }
 
@@ -46,7 +51,7 @@ void AudioWriter::addData(QByteArray data)
 
 void AudioWriter::stop()
 {
-    std::cout << "Stoping writer" << std::endl;
+    std::cout << "Stopping writer" << std::endl;
     m_stop = true;
     m_wait.wakeAll();
     wait();
@@ -75,20 +80,15 @@ void AudioSender::run()
             continue;
         std::cout << "Send: " << buffer.size() << std::endl;
         m_sock->writeDatagram(buffer, m_peerAddress, m_peerPort);
-
-//        while(buffer.size() > 0)
-//        {
-//            QByteArray datagram = buffer.mid(0, 4096);
-//            buffer.remove(0, 4096);
-//            m_sock->writeDatagram(datagram, m_peerAddress, m_peerPort);
-//        }
     }
+    std::cout << "Sender Finished" << std::endl;
     exit(0);
 }
 
 
 void AudioSender::stop()
 {
+    std::cout << "Stopping Sender" << std::endl;
     m_stop = true;
     wait();
 }
@@ -139,25 +139,14 @@ quint16 Audio::getPort()
 void Audio::readDatagrams()
 {
     QByteArray datagram;
-    datagram.resize(m_sock->pendingDatagramSize());
     QHostAddress sender;
     quint16 senderPort;
-
-    m_sock->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
-
-    if (!m_outputDevice)
-        return;
-
-    m_writer->addData(datagram);
-}
-
-
-void Audio::writeDatagrams()
-{
-    QByteArray datagram = m_inputDevice->read(16000);
-    if (!m_isListen)
-        return;
-    m_sock->writeDatagram(datagram, m_peerAddress, m_peerPort);
+    while (m_sock->hasPendingDatagrams())
+    {
+	datagram.resize(m_sock->pendingDatagramSize());
+	m_sock->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
+	m_writer->addData(datagram);
+    }
 }
 
 
@@ -179,7 +168,7 @@ void Audio::startCall(QHostAddress peerAddress, quint16 peerPort)
 {
     std::cout << "STARTING Call" << std::endl;
     m_peerAddress = peerAddress;
-    //m_peerAddress = QHostAddress("127.0.0.1"); //I use this for testing with 2 clients on one box
+    m_peerAddress = QHostAddress("127.0.0.1"); //I use this for testing with 2 clients on one box
     m_peerPort = peerPort;
 
     m_inputDevice = m_input->start();
@@ -189,9 +178,6 @@ void Audio::startCall(QHostAddress peerAddress, quint16 peerPort)
 
     m_sender = new AudioSender(m_inputDevice, m_sock, m_peerAddress, m_peerPort);
     m_sender->start();
-
-    //connect(m_sock, &QUdpSocket::readyRead, this, &Audio::readDatagrams);
-    //connect(m_inputDevice, &QIODevice::readyRead, this, &Audio::writeDatagrams);
 }
 
 
@@ -219,8 +205,9 @@ void Audio::stopCall()
         m_sender->stop();
         delete m_sender;
         m_sender = nullptr;
-        //disconnect(m_inputDevice, &QIODevice::readyRead, this, &Audio::writeDatagrams);
+
         m_inputDevice->close();
         m_inputDevice = nullptr;
     }
 }
+
