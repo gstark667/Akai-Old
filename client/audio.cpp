@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-AudioWriter::AudioWriter(QIODevice *outputDevice)
+AudioWriter::AudioWriter(QIODevice *outputDevice): QThread()
 {
     m_outputDevice = outputDevice;
     m_stop = false;
@@ -19,17 +19,19 @@ void AudioWriter::run()
         m_wait.wait(&mutex);
         mutex.unlock();
         if (m_stop)
-            return;
+            break;
         m_mutex.lock();
         m_data.append(m_buffer);
         m_buffer.clear();
         m_mutex.unlock();
-	while (m_data.size() > 0)
+	while (m_data.size() > 4096)
 	{
-	    qint64 i = m_outputDevice->write(m_data.data(), m_data.size());
+	    qint64 i = m_outputDevice->write(m_data.data(), 4096);
 	    m_data.remove(0, i);
 	}
     }
+    std::cout << "Stop finished" << std::endl;
+    exit(0);
 }
 
 
@@ -44,8 +46,51 @@ void AudioWriter::addData(QByteArray data)
 
 void AudioWriter::stop()
 {
+    std::cout << "Stoping writer" << std::endl;
     m_stop = true;
     m_wait.wakeAll();
+    wait();
+}
+
+
+AudioSender::AudioSender(QIODevice *inputDevice, QUdpSocket *sock, QHostAddress peerAddress, quint16 peerPort): QThread()
+{
+    m_inputDevice = inputDevice;
+    m_sock = sock;
+    m_peerAddress = peerAddress;
+    m_peerPort = peerPort;
+    m_stop = false;
+}
+
+
+void AudioSender::run()
+{
+    while (true)
+    {
+        sleep(1);
+        if (m_stop)
+            break;
+        QByteArray buffer = m_inputDevice->readAll();
+        if (buffer.size() == 0)
+            continue;
+        std::cout << "Send: " << buffer.size() << std::endl;
+        m_sock->writeDatagram(buffer, m_peerAddress, m_peerPort);
+
+//        while(buffer.size() > 0)
+//        {
+//            QByteArray datagram = buffer.mid(0, 4096);
+//            buffer.remove(0, 4096);
+//            m_sock->writeDatagram(datagram, m_peerAddress, m_peerPort);
+//        }
+    }
+    exit(0);
+}
+
+
+void AudioSender::stop()
+{
+    m_stop = true;
+    wait();
 }
 
 
@@ -93,7 +138,6 @@ quint16 Audio::getPort()
 
 void Audio::readDatagrams()
 {
-    std::cout << "Reading" << std::endl;
     QByteArray datagram;
     datagram.resize(m_sock->pendingDatagramSize());
     QHostAddress sender;
@@ -110,7 +154,6 @@ void Audio::readDatagrams()
 
 void Audio::writeDatagrams()
 {
-    std::cout << "Writing to: " << m_peerPort << std::endl;
     QByteArray datagram = m_inputDevice->read(16000);
     if (!m_isListen)
         return;
@@ -136,7 +179,7 @@ void Audio::startCall(QHostAddress peerAddress, quint16 peerPort)
 {
     std::cout << "STARTING Call" << std::endl;
     m_peerAddress = peerAddress;
-    //m_peerAddress = QHostAddress("127.0.0.1"); I use this for testing with 2 clients on one box
+    //m_peerAddress = QHostAddress("127.0.0.1"); //I use this for testing with 2 clients on one box
     m_peerPort = peerPort;
 
     m_inputDevice = m_input->start();
@@ -144,8 +187,11 @@ void Audio::startCall(QHostAddress peerAddress, quint16 peerPort)
     m_writer = new AudioWriter(m_outputDevice);
     m_writer->start();
 
-    connect(m_sock, &QUdpSocket::readyRead, this, &Audio::readDatagrams);
-    connect(m_inputDevice, &QIODevice::readyRead, this, &Audio::writeDatagrams);
+    m_sender = new AudioSender(m_inputDevice, m_sock, m_peerAddress, m_peerPort);
+    m_sender->start();
+
+    //connect(m_sock, &QUdpSocket::readyRead, this, &Audio::readDatagrams);
+    //connect(m_inputDevice, &QIODevice::readyRead, this, &Audio::writeDatagrams);
 }
 
 
@@ -160,16 +206,20 @@ void Audio::stopCall()
 
     if (m_outputDevice)
     {
+        m_writer->stop();
+        delete m_writer;
+        m_writer = nullptr;
+
         m_outputDevice->close();
         m_outputDevice = nullptr;
     }
 
     if (m_inputDevice)
     {
-        disconnect(m_inputDevice, &QIODevice::readyRead, this, &Audio::writeDatagrams);
-        m_writer->stop();
-        delete m_writer;
-        m_writer = nullptr;
+        m_sender->stop();
+        delete m_sender;
+        m_sender = nullptr;
+        //disconnect(m_inputDevice, &QIODevice::readyRead, this, &Audio::writeDatagrams);
         m_inputDevice->close();
         m_inputDevice = nullptr;
     }

@@ -35,6 +35,24 @@ public:
 };
 
 
+class AudioSender: public QThread
+{
+private:
+    QIODevice     *m_inputDevice;
+    QUdpSocket    *m_sock;
+    QHostAddress   m_peerAddress;
+    quint16        m_peerPort;
+
+    bool           m_stop;
+
+public:
+    AudioSender(QIODevice *inputDevice, QUdpSocket *sock, QHostAddress peerAddress, quint16 peerPort);
+
+    void run();
+    void stop();
+};
+
+
 class Audio: public QObject
 {
     Q_OBJECT
@@ -49,9 +67,10 @@ private:
     QAudioOutput *m_output;
     QIODevice    *m_outputDevice;
     AudioWriter  *m_writer;
+    AudioSender  *m_sender;
 
     QHostAddress  m_peerAddress;
-    quint16        m_peerPort;
+    quint16       m_peerPort;
 
     bool          m_isListen;
     QHostAddress  m_broker;
