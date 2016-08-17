@@ -101,13 +101,20 @@ def get_messages(name):
     return [message for message in db.messages.find({'$or': [{'receiver': user['_id']}, {'sender': user['_id']}]}).sort([('time', ASCENDING)])]
 
 
-def get_group(user, gid):
+def get_group(user, gid, manage=False):
     user = get_user(user)
     for group in db.groups.find({'_id': gid}):
-        if group['owner'] != user['_id']:
-            raise DBException('You cannot modify group %s' % (gid))
+        if group['owner'] != user['_id'] and manage:
+            raise DBException('You cannot manage group %s' % (gid))
         return group
     raise DBException('Group "%s" not found' % (gid))
+
+
+def is_group_member(user, gid, member_name):
+    gid = ObjectId(gid)
+    member = get_user(member_name)
+    group = get_group(user, gid, False)
+    return member['_id'] in group['members']
 
 
 def create_group(user, name, members):
@@ -117,14 +124,14 @@ def create_group(user, name, members):
 
 def add_group_member(user, gid, member_name):
     gid = ObjectId(gid)
-    group = get_group(user, gid)
+    group = get_group(user, gid, True)
     member = get_user(member_name)
     db.groups.update({'_id': gid}, {'$push': {'members': member['_id']}})
 
 
 def remove_group_member(user, gid, member_name):
     gid = ObjectId(gid)
-    group = get_group(user, gid)
+    group = get_group(user, gid, True)
     member = get_user(member_name)
     db.groups.update({'_id': gid}, {'$pull': {'members': member['_id']}})
 
