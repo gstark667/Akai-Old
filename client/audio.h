@@ -3,6 +3,7 @@
 
 #include <QtCore/QWaitCondition>
 #include <QtCore/QThread>
+#include <QtCore/QDataStream>
 #include <QtCore/QMutex>
 #include <QtCore/QIODevice>
 #include <QtCore/QObject>

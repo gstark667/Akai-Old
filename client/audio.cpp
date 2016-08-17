@@ -24,14 +24,14 @@ void AudioWriter::run()
         m_data.append(m_buffer);
         m_buffer.clear();
         m_mutex.unlock();
-        std::cout << "One" << std::endl;
 	while (m_data.size() > 0)
 	{
-            //TODO this method is comsuming lots of cpu, it will write once, then loop through 
-            //     really fast writing 0 bytes each time since the buffer gets full
-            //     idealy we should wait until the data has been written before we try again
 	    qint64 i = m_outputDevice->write(m_data.data(), m_data.size());
-            std::cout << "Two: " << i << std::endl;
+            if (i == 0)
+            {
+                msleep(100);
+                continue;
+            }
 	    m_data.remove(0, i);
 	}
     }
@@ -156,7 +156,6 @@ void Audio::startListen(QString name)
     if (m_isListen)
         return; // TODO error message to show that you're already in a call
     m_sock->writeDatagram("Hello World", m_broker, m_port);
-    //m_sock->bind(QHostAddress::Broadcast, m_port, QUdpSocket::DontShareAddress);
     connect(m_sock, &QUdpSocket::readyRead, this, &Audio::readDatagrams);
     std::cout << "Local: " << m_sock->localPort() << " Peer: " << m_sock->peerPort() << std::endl;
     m_isListen = true;
@@ -168,7 +167,7 @@ void Audio::startCall(QHostAddress peerAddress, quint16 peerPort)
 {
     std::cout << "STARTING Call" << std::endl;
     m_peerAddress = peerAddress;
-    m_peerAddress = QHostAddress("127.0.0.1"); //I use this for testing with 2 clients on one box
+    //m_peerAddress = QHostAddress("127.0.0.1"); //I use this for testing with 2 clients on one box
     m_peerPort = peerPort;
 
     m_inputDevice = m_input->start();
