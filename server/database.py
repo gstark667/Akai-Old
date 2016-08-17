@@ -1,4 +1,5 @@
 from pymongo import MongoClient, ASCENDING
+from bson.objectid import ObjectId
 import binascii, hashlib, os, time
 
 
@@ -98,3 +99,32 @@ def save_message(name, receiver_name, message):
 def get_messages(name):
     user = get_user(name)
     return [message for message in db.messages.find({'$or': [{'receiver': user['_id']}, {'sender': user['_id']}]}).sort([('time', ASCENDING)])]
+
+
+def get_group(user, gid):
+    user = get_user(user)
+    for group in db.groups.find({'_id': gid}):
+        if group['owner'] != user['_id']:
+            raise DBException('You cannot modify group %s' % (gid))
+        return group
+    raise DBException('Group "%s" not found' % (gid))
+
+
+def create_group(user, name, members):
+    user = get_user(user)
+    return db.groups.insert({'name': name, 'owner': user['_id'], 'members': [get_user(member)['_id'] for member in members]})
+
+
+def add_group_member(user, gid, member_name):
+    gid = ObjectId(gid)
+    group = get_group(user, gid)
+    member = get_user(member_name)
+    db.groups.update({'_id': gid}, {'$push': {'members': member['_id']}})
+
+
+def remove_group_member(user, gid, member_name):
+    gid = ObjectId(gid)
+    group = get_group(user, gid)
+    member = get_user(member_name)
+    db.groups.update({'_id': gid}, {'$pull': {'members': member['_id']}})
+
