@@ -106,6 +106,8 @@ def get_group(user, gid, manage=False):
     for group in db.groups.find({'_id': gid}):
         if group['owner'] != user['_id'] and manage:
             raise DBException('You cannot manage group %s' % (gid))
+        if user['_id'] not in group['members'] and user['_id'] != group['owner']:
+            raise DBException('You cannot view group %s' % (gid))
         return group
     raise DBException('Group "%s" not found' % (gid))
 
@@ -115,6 +117,11 @@ def is_group_member(user, gid, member_name):
     member = get_user(member_name)
     group = get_group(user, gid, False)
     return member['_id'] in group['members']
+
+
+def get_group_members(user, gid):
+    group = get_group(user, gid, False)
+    return group['members']
 
 
 def create_group(user, name, members):
@@ -134,4 +141,15 @@ def remove_group_member(user, gid, member_name):
     group = get_group(user, gid, True)
     member = get_user(member_name)
     db.groups.update({'_id': gid}, {'$pull': {'members': member['_id']}})
+
+
+def save_group_message(user, gid, message):
+    user = get_user(user)
+    group = get_group(user, gid, False)
+    db.group_messages.insert({'sender': user, 'group': group['_id'], 'message': message, 'time': time.time()})
+
+
+def get_group_messages(user, gid):
+    group = get_group(user, gid, False)
+    return [message for message in db.group_messages.find({'group': group['_id']}).sort([('time', ASCENDING)])]
 
