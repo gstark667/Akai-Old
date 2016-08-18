@@ -102,6 +102,8 @@ def get_messages(name):
 
 
 def get_group(user, gid, manage=False):
+    if type(gid) == str:
+        gid = ObjectId(gid)
     user = get_user(user)
     for group in db.groups.find({'_id': gid}):
         if group['owner'] != user['_id'] and manage:
@@ -109,7 +111,7 @@ def get_group(user, gid, manage=False):
         if user['_id'] not in group['members'] and user['_id'] != group['owner']:
             raise DBException('You cannot view group %s' % (gid))
         return group
-    raise DBException('Group "%s" not found' % (gid))
+    raise DBException('Group "%s" not found' % (str(gid)))
 
 
 def is_group_member(user, gid, member_name):
@@ -124,9 +126,20 @@ def get_group_members(user, gid):
     return group['members']
 
 
+def get_group_messages(user, gid):
+    group = get_group(user, gid, False)
+    return [message for message in db.group_messages.find({'group': group['_id']}).sort([('time', ASCENDING)])]
+
+
 def create_group(user, name, members):
     user = get_user(user)
     return db.groups.insert({'name': name, 'owner': user['_id'], 'members': [get_user(member)['_id'] for member in members]})
+
+
+def delete_group(user, gid):
+    group = get_group(user, gid, True)
+    db.groups.remove({'_id': group['_id']})
+    db.group_messages.remove({'group': group['_id']})
 
 
 def add_group_member(user, gid, member_name):
@@ -144,9 +157,9 @@ def remove_group_member(user, gid, member_name):
 
 
 def save_group_message(user, gid, message):
-    user = get_user(user)
     group = get_group(user, gid, False)
-    db.group_messages.insert({'sender': user, 'group': group['_id'], 'message': message, 'time': time.time()})
+    user = get_user(user)
+    db.group_messages.insert({'sender': user['_id'], 'group': group['_id'], 'message': message, 'time': time.time()})
 
 
 def get_group_messages(user, gid):
