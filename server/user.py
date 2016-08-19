@@ -96,6 +96,14 @@ class User:
             else:
                 self.send_message('USERMSG %s :%s' % (sender['name'], message['message']))
 
+    def group_history(self, gid):
+        for message in database.get_group_messages(self.name, gid):
+            sender = database.get_user_by_id(message['sender'])
+            if sender['name'] == self.name:
+                self.send_message('GRPMSGSNT %s :%s' % (gid, message['message']))
+            else:
+                self.send_message('GRPMSG %s %s :%s' % (gid, sender['name'], message['message']))
+
     def friend(self, friend_name, message=None):
         database.add_friend(self.name, friend_name)
         try:
@@ -122,6 +130,11 @@ class User:
             raise UserException('User "%s" is not your friend' % (self.name))
         self.send_message('USERMSG %s :%s' % (name, message))
 
+    def grpmsg(self, gid, user, message):
+        if not database.is_group_member(name, gid):
+            raise UserException('"%s" is not a member of group %s' % (name, gid))
+        self.send_message('GRPMSG %s %s :%s' % (gid, name, message))
+
     def send_usermsg(self, name, message):
         database.save_message(self.name, name, message)
         self.send_message('USERMSGSNT %s :%s' % (name, message))
@@ -130,6 +143,16 @@ class User:
             user.usermsg(self.name, message)
         except UserException:
             pass
+
+    def send_grpmsg(self, gid, message):
+        database.save_group_message(self.name, gid, message)
+        self.send_message('GRPMSGSNT %s :%s' % (gid, message))
+        for user in database.get_group_members(self.name, gid):
+            try:
+                user = get_user(user)
+                user.grpmsg(gid, self.name, message)
+            except UserException:
+                pass
 
     def friends(self):
         friends = database.list_friends(self.name)
@@ -168,8 +191,11 @@ class User:
             'REGISTER': self.register,
             'USER'    : self.authenticate,
             'USERS'   : self.users,
+            'GROUPS'  : self.groups,
             'USERMSG' : self.send_usermsg,
+            'GRPMSG'  : self.send_grpmsg,
             'MSGHIST' : self.message_history,
+            'GRPHIST' : self.group_history,
             'FRIEND'  : self.friend,
             'UNFRIEND': self.unfriend,
             'FRIENDS' : self.friends,

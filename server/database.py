@@ -123,7 +123,7 @@ def is_group_member(user, gid, member_name):
 
 def get_group_members(user, gid):
     group = get_group(user, gid, False)
-    return group['members']
+    return [get_user_by_id(user)['name'] for user in group['members']]
 
 
 def get_group_messages(user, gid):
