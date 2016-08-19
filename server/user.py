@@ -170,6 +170,22 @@ class User:
         user = get_user(name)
         user.call(self.name, self.addr[0], port)
 
+    def create(self, name, *members):
+        gid = database.create_group(self.name, name, members)
+        self.send_message('CREATED %s %s' % (gid, name))
+
+    def add(self, gid, user):
+        database.add_group_member(self.name, gid, user)
+        self.send_message('ADDED %s %s' % (gid, user))
+
+    def remove(self, gid, user):
+        database.remove_group_member(self.name, gid, user)
+        self.send_message('REMOVED %s %s' % (gid, user))
+
+    def disband(self, gid):
+        database.delete_group(self.name, gid)
+        self.send_message('DISBANDED %s' % (gid))
+
     def users(self):
         users = database.list_users()
         message = 'USERS :'
@@ -191,7 +207,6 @@ class User:
             'REGISTER': self.register,
             'USER'    : self.authenticate,
             'USERS'   : self.users,
-            'GROUPS'  : self.groups,
             'USERMSG' : self.send_usermsg,
             'GRPMSG'  : self.send_grpmsg,
             'MSGHIST' : self.message_history,
@@ -199,6 +214,11 @@ class User:
             'FRIEND'  : self.friend,
             'UNFRIEND': self.unfriend,
             'FRIENDS' : self.friends,
+            'GROUPS'  : self.groups,
+            'CREATE'  : self.create,
+            'ADD'     : self.add,
+            'REMOVE'  : self.remove,
+            'DISBAND' : self.disband,
             'CALL'    : self.send_call,
             'QUIT'    : self.quit
         }
