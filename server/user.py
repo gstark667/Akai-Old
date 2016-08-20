@@ -45,7 +45,6 @@ class User:
     def recv(self):
         try:
             data = self.sock.recv(1024)
-            print(data)
         except ssl.SSLError as e:
             if e.erno != ssl.SSL_ERROR_WANT_READ:
                 return False
