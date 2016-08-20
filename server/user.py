@@ -45,6 +45,7 @@ class User:
     def recv(self):
         try:
             data = self.sock.recv(1024)
+            print(data)
         except ssl.SSLError as e:
             if e.erno != ssl.SSL_ERROR_WANT_READ:
                 return False
@@ -198,7 +199,14 @@ class User:
         groups = database.get_groups(self.name)
         message = 'GROUPS :'
         for group in groups:
-            message += user + ' '
+            message += group + ' '
+        self.send_message(message.strip())
+
+    def members(self, gid):
+        members = database.get_group_members(self.name, gid)
+        message = 'MEMBERS %s :' % (gid)
+        for member in members:
+            message += member + ' '
         self.send_message(message.strip())
 
     def quit(self):
@@ -222,6 +230,7 @@ class User:
             'UNFRIEND': self.unfriend,
             'FRIENDS' : self.friends,
             'GROUPS'  : self.groups,
+            'MEMBERS' : self.members,
             'CREATE'  : self.create,
             'ADD'     : self.add,
             'REMOVE'  : self.remove,
@@ -235,10 +244,12 @@ class User:
                 actions[args[0]](*(args[1:]))
             else:
                 self.send_message('ERROR :Invalid command')
-        except TypeError as e:
-            self.send_message('ERROR :Wrong number of arguments')
-        except Exception as e:
-            self.send_message('ERROR :' + str(e))
+        #except TypeError as e:
+        #    self.send_message('ERROR :Wrong number of arguments')
+        #except Exception as e:
+        #    self.send_message('ERROR :' + str(e))
+        except:
+            raise
 
     def process_messages(self):
         while '\r\n' in self.buff:
