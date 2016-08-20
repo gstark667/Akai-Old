@@ -194,6 +194,13 @@ class User:
                 message += user + ' '
         self.send_message(message.strip())
 
+    def groups(self):
+        groups = database.get_groups(self.name)
+        message = 'GROUPS :'
+        for group in groups:
+            message += user + ' '
+        self.send_message(message.strip())
+
     def quit(self):
         self.close()
         users.remove(self)

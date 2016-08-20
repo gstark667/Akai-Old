@@ -166,3 +166,7 @@ def get_group_messages(user, gid):
     group = get_group(user, gid, False)
     return [message for message in db.group_messages.find({'group': group['_id']}).sort([('time', ASCENDING)])]
 
+def get_groups(name):
+    user = get_user(name)
+    return [group['_id'] for group in db.groups.find({'members': {'$elemMatch' : {user['_id']}}})]
+
