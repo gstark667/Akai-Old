@@ -123,7 +123,7 @@ def is_group_member(user, gid, member_name):
 
 def get_group_members(user, gid):
     group = get_group(user, gid, False)
-    return [get_user_by_id(user)['name'] for user in group['members']]
+    return [get_user_by_id(user)['name'] for user in group['members']] + [get_user_by_id(group['owner'])['name']]
 
 
 def get_group_messages(user, gid):
@@ -143,6 +143,8 @@ def delete_group(user, gid):
 
 
 def add_group_member(user, gid, member_name):
+    if is_group_member(user, gid, member_name):
+        raise DBException('User "%s" is already a member of group %s' % (member_name, gid))
     gid = ObjectId(gid)
     group = get_group(user, gid, True)
     member = get_user(member_name)
@@ -150,6 +152,8 @@ def add_group_member(user, gid, member_name):
 
 
 def remove_group_member(user, gid, member_name):
+    if not is_group_member(user, gid, member_name):
+        raise DBException('User "%s" is not a member of group %s' % (member_name, gid))
     gid = ObjectId(gid)
     group = get_group(user, gid, True)
     member = get_user(member_name)
@@ -168,5 +172,14 @@ def get_group_messages(user, gid):
 
 def get_groups(name):
     user = get_user(name)
-    return [str(group['_id']) for group in db.groups.find({'members': user['_id']})]
+    return [str(group['_id']) for group in db.groups.find({'$or': [{'members': user['_id']}, {'owner': user['_id']}]})]
+
+
+def get_owned_groups(name):
+    user = get_user(name)
+    return [str(group['_id']) for group in db.groups.find({'owner': user['_id']})]
+
+def get_group_name(name, gid):
+    group = get_group(name, gid, False)
+    return group['name']
 

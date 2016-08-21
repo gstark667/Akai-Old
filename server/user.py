@@ -104,6 +104,10 @@ class User:
             else:
                 self.send_message('GRPMSG %s %s :%s' % (gid, sender['name'], message['message']))
 
+    def group_name(self, gid):
+        name = database.get_group_name(self.name, gid)
+        self.send_message('GRPNAME %s %s' % (gid, name))
+
     def friend(self, friend_name, message=None):
         database.add_friend(self.name, friend_name)
         try:
@@ -131,9 +135,9 @@ class User:
         self.send_message('USERMSG %s :%s' % (name, message))
 
     def grpmsg(self, gid, user, message):
-        if not database.is_group_member(name, gid):
-            raise UserException('"%s" is not a member of group %s' % (name, gid))
-        self.send_message('GRPMSG %s %s :%s' % (gid, name, message))
+        if user == self.name:
+            return
+        self.send_message('GRPMSG %s %s :%s' % (gid, user, message))
 
     def send_usermsg(self, name, message):
         database.save_message(self.name, name, message)
@@ -201,6 +205,13 @@ class User:
             message += group + ' '
         self.send_message(message.strip())
 
+    def owned(self):
+        groups = database.get_owned_groups(self.name)
+        message = 'OWNED :'
+        for group in groups:
+            message += group + ' '
+        self.send_message(message.strip())
+
     def members(self, gid):
         members = database.get_group_members(self.name, gid)
         message = 'MEMBERS %s :' % (gid)
@@ -225,10 +236,12 @@ class User:
             'GRPMSG'  : self.send_grpmsg,
             'MSGHIST' : self.message_history,
             'GRPHIST' : self.group_history,
+            'GRPNAME' : self.group_name,
             'FRIEND'  : self.friend,
             'UNFRIEND': self.unfriend,
             'FRIENDS' : self.friends,
             'GROUPS'  : self.groups,
+            'OWNED'   : self.owned,
             'MEMBERS' : self.members,
             'CREATE'  : self.create,
             'ADD'     : self.add,
