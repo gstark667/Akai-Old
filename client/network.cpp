@@ -53,14 +53,12 @@ void Network::sendMessage(QString message)
 
 void Network::sendUserMessage(QString user, QString message)
 {
-    std::cout << "Sending " + message.toStdString() + " to " + user.toStdString() << std::endl;
     sendMessage("USERMSG " + user + " :" + message);
 }
 
 
 void Network::sendGroupMessage(QString group, QString message)
 {
-    std::cout << "Sending " + message.toStdString() + " to " + group.toStdString() << std::endl;
     sendMessage("GRPMSG " + group + " :" + message);
 }
 

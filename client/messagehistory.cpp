@@ -17,7 +17,6 @@ void MessageHistory::updateMessages()
 
 void MessageHistory::friendSelected(QListWidgetItem *item)
 {
-    std::cout << "Friend Selected" << std::endl;
     m_currentFriend = item->text();
     m_currentGroup  = "";
     if (m_userMessages.find(m_currentFriend) == m_userMessages.end())
@@ -28,7 +27,6 @@ void MessageHistory::friendSelected(QListWidgetItem *item)
 
 void MessageHistory::groupSelected(QListWidgetItem *item)
 {
-    std::cout << "Group Selected" << std::endl;
     m_currentFriend = "";
     m_currentGroup  = item->data(Qt::UserRole).toString();
     if (m_groupMessages.find(m_currentGroup) == m_groupMessages.end())
@@ -39,8 +37,6 @@ void MessageHistory::groupSelected(QListWidgetItem *item)
 
 void MessageHistory::sendMessage(QString message)
 {
-    std::cout << "Current Friend: " << m_currentFriend.toStdString() << std::endl;
-    std::cout << "Current Group: " << m_currentGroup.toStdString() << std::endl;
     if (m_currentFriend != "")
         emit sendUserMessage(m_currentFriend, message);
     if (m_currentGroup != "")
@@ -78,11 +74,18 @@ void MessageHistory::sentUserMessage(QString user, QString message)
 
 void MessageHistory::recvGroupMessage(QString group, QString user, QString message)
 {
-    std::cout << "Group Message: " << message.toStdString() << std::endl;
     if (m_groupMessages.find(group) == m_groupMessages.end())
+    {
         m_groupMessages[group] = "";
+        m_groupLastSender[group] = "";
+    }
 
-    m_groupMessages[group] += ("<p class='recv-message'><h4>" + user + ":</h4>" + message.toHtmlEscaped() + "</p>");
+    if (m_groupLastSender[group] == user)
+        m_groupMessages[group] += ("<p class='recv-message'>" + message.toHtmlEscaped() + "</p>");
+    else
+        m_groupMessages[group] += ("<p class='recv-message'><h4>" + user + ":</h4>" + message.toHtmlEscaped() + "</p>");
+
+    m_groupLastSender[group] = user;
     if (group == m_currentGroup)
         updateMessages();
 }
@@ -91,9 +94,13 @@ void MessageHistory::recvGroupMessage(QString group, QString user, QString messa
 void MessageHistory::sentGroupMessage(QString group, QString message)
 {
     if (m_groupMessages.find(group) == m_groupMessages.end())
+    {
         m_groupMessages[group] = "";
+        m_groupLastSender[group] = "";
+    }
 
     m_groupMessages[group] += ("<p class='sent-message'>" + message.toHtmlEscaped() + "</p>");
+    m_groupLastSender[group] = "";
     if (group == m_currentGroup)
         updateMessages();
 }

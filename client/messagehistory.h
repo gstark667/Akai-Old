@@ -11,6 +11,7 @@ class MessageHistory: public QTextBrowser
 private:
     std::map<QString, QString> m_userMessages;
     std::map<QString, QString> m_groupMessages;
+    std::map<QString, QString> m_groupLastSender;
     QString m_currentFriend;
     QString m_currentGroup;
 
