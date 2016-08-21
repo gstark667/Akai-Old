@@ -83,6 +83,11 @@ void MainWindow::setupUI()
     connect(m_messageHistory, &MessageHistory::addUser, m_messageList, &MessageList::addFriend);
     connect(m_network, &Network::updateFriends, m_messageList, &MessageList::updateFriends);
 
+    // Groups
+    connect(m_network,     &Network::updateGroups,     m_messageList, &MessageList::updateGroups);
+    connect(m_messageList, &MessageList::getGroupName, m_network,     &Network::getGroupName);
+    connect(m_network,     &Network::nameGroup,        m_messageList, &MessageList::nameGroup);
+
     connect(addFriendAction, &QAction::triggered, m_addFriendDialog, &AddFriendDialog::show);
     connect(m_network, &Network::updateUsers, m_addFriendDialog, &AddFriendDialog::updateUsers);
     connect(m_network, &Network::updateFriends, m_addFriendDialog, &AddFriendDialog::updateFriends);

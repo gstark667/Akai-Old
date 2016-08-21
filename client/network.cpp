@@ -29,6 +29,7 @@ void Network::login(QString username, QString password)
     sendMessage("USER " + username + " " + password);
     sendMessage("FRIENDS");
     sendMessage("MSGHIST");
+    sendMessage("GROUPS");
 }
 
 
@@ -66,6 +67,12 @@ void Network::listUsers()
 void Network::listFriends()
 {
     sendMessage("FRIENDS");
+}
+
+
+void Network::getGroupName(QString group)
+{
+    sendMessage("GRPNAME " + group);
 }
 
 
@@ -139,6 +146,15 @@ void Network::handleMessage(QString message)
     else if (argv[0] == "USERS" && argc == 2)
     {
         emit updateUsers(argv[1].simplified().split(" "));
+    }
+    else if (argv[0] == "GROUPS" && argc == 2)
+    {
+        emit updateGroups(argv[1].simplified().split(" "));
+    }
+    else if (argv[0] == "GRPNAME" && argc == 3)
+    {
+        std::cout << "Network::GRPNAME" << std::endl;
+        emit nameGroup(argv[1], argv[2]);
     }
     else if (argv[0] == "CALL" && argc == 4)
     {

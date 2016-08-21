@@ -60,11 +60,13 @@ public:
 public slots:
     void updateFriends(QStringList friends);
     void updateGroups(QStringList groups);
+    void nameGroup(QString group, QString name);
     void addFriend(QString);
     void addGroup(QString);
     void showFriendMenu(const QPoint &pos);
 
 signals:
+    void getGroupName(QString group);
     void friendSelected(QListWidgetItem *item);
     void groupSelected(QListWidgetItem *item);
     void callFriend(QString name);

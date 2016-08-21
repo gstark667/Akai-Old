@@ -73,6 +73,17 @@ void MessageList::updateGroups(QStringList groups)
     for (int i = 0; i < groups.size(); ++i)
     {
         addGroup(groups[i]);
+        emit getGroupName(groups[i]);
+    }
+}
+
+
+void MessageList::nameGroup(QString group, QString name)
+{
+    for (int i = 0; i < m_groupsList->count(); ++i)
+    {
+        if (m_groupsList->item(i)->data(Qt::UserRole) == group)
+            m_groupsList->item(i)->setText(name);
     }
 }
 
@@ -96,10 +107,13 @@ void MessageList::addGroup(QString group)
         return;
     for (int i = 0; i < m_groupsList->count(); ++i)
     {
-        if (m_friendsList->item(i)->text() == group)
+        if (m_groupsList->item(i)->data(Qt::UserRole) == group)
             return;
     }
-    m_friendsList->addItem(group);
+    QListWidgetItem *new_group = new QListWidgetItem(m_groupsList);
+    new_group->setText(group);
+    new_group->setData(Qt::UserRole, group);
+    m_groupsList->addItem(new_group);
 }
 
 
