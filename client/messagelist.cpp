@@ -114,6 +114,7 @@ void MessageList::addGroup(QString group)
     new_group->setText(group);
     new_group->setData(Qt::UserRole, group);
     m_groupsList->addItem(new_group);
+    emit getGroupHistory(group);
 }
 
 

@@ -83,6 +83,12 @@ void Network::getGroupName(QString group)
 }
 
 
+void Network::getGroupHistory(QString group)
+{
+    sendMessage("GRPHIST " + group);
+}
+
+
 void Network::addFriend(QString name)
 {
     sendMessage("FRIEND " + name);
@@ -145,7 +151,7 @@ void Network::handleMessage(QString message)
     {
         emit sentUserMessage(argv[1], argv[2]);
     }
-    else if (argv[0] == "GRPMSG" && argc == 3)
+    else if (argv[0] == "GRPMSG" && argc == 4)
     {
         emit recvGroupMessage(argv[1], argv[2], argv[3]);
     }

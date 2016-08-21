@@ -78,10 +78,11 @@ void MessageHistory::sentUserMessage(QString user, QString message)
 
 void MessageHistory::recvGroupMessage(QString group, QString user, QString message)
 {
+    std::cout << "Group Message: " << message.toStdString() << std::endl;
     if (m_groupMessages.find(group) == m_groupMessages.end())
         m_groupMessages[group] = "";
 
-    m_groupMessages[group] += ("<p class='recv-message'><bold>" + user + "</bold><br/>" + message.toHtmlEscaped() + "</p>");
+    m_groupMessages[group] += ("<p class='recv-message'><h4>" + user + ":</h4>" + message.toHtmlEscaped() + "</p>");
     if (group == m_currentGroup)
         updateMessages();
 }

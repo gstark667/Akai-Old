@@ -29,6 +29,7 @@ public slots:
     void listUsers();
     void listFriends();
     void getGroupName(QString group);
+    void getGroupHistory(QString group);
     void addFriend(QString name);
     void callFriend(QString name, quint16 port);
     void removeFriend(QString name);

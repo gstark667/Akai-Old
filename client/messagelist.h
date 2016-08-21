@@ -67,6 +67,7 @@ public slots:
 
 signals:
     void getGroupName(QString group);
+    void getGroupHistory(QString group);
     void friendSelected(QListWidgetItem *item);
     void groupSelected(QListWidgetItem *item);
     void callFriend(QString name);
