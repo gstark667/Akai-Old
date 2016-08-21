@@ -25,6 +25,7 @@ private slots:
 public slots:
     void login(QString username, QString password);
     void sendUserMessage(QString user, QString message);
+    void sendGroupMessage(QString group, QString message);
     void listUsers();
     void listFriends();
     void getGroupName(QString group);
@@ -37,6 +38,8 @@ signals:
 
     void recvUserMessage(QString user, QString message);
     void sentUserMessage(QString user, QString message);
+    void recvGroupMessage(QString group, QString user, QString message);
+    void sentGroupMessage(QString group, QString message);
 
     void updateFriends(QStringList friends);
     void updateGroups(QStringList groups);

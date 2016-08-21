@@ -58,6 +58,13 @@ void Network::sendUserMessage(QString user, QString message)
 }
 
 
+void Network::sendGroupMessage(QString group, QString message)
+{
+    std::cout << "Sending " + message.toStdString() + " to " + group.toStdString() << std::endl;
+    sendMessage("GRPMSG " + group + " :" + message);
+}
+
+
 void Network::listUsers()
 {
     sendMessage("USERS");
@@ -138,6 +145,14 @@ void Network::handleMessage(QString message)
     {
         emit sentUserMessage(argv[1], argv[2]);
     }
+    else if (argv[0] == "GRPMSG" && argc == 3)
+    {
+        emit recvGroupMessage(argv[1], argv[2], argv[3]);
+    }
+    else if (argv[0] == "GRPMSGSNT" && argc == 3)
+    {
+        emit sentGroupMessage(argv[1], argv[2]);
+    }
     else if (argv[0] == "FRIENDS" && argc == 2)
     {
         std::cout << "Network got userlist" << std::endl;
@@ -153,7 +168,6 @@ void Network::handleMessage(QString message)
     }
     else if (argv[0] == "GRPNAME" && argc == 3)
     {
-        std::cout << "Network::GRPNAME" << std::endl;
         emit nameGroup(argv[1], argv[2]);
     }
     else if (argv[0] == "CALL" && argc == 4)

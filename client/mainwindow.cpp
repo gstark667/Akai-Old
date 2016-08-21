@@ -84,9 +84,13 @@ void MainWindow::setupUI()
     connect(m_network, &Network::updateFriends, m_messageList, &MessageList::updateFriends);
 
     // Groups
-    connect(m_network,     &Network::updateGroups,     m_messageList, &MessageList::updateGroups);
-    connect(m_messageList, &MessageList::getGroupName, m_network,     &Network::getGroupName);
-    connect(m_network,     &Network::nameGroup,        m_messageList, &MessageList::nameGroup);
+    connect(m_network,     &Network::updateGroups,     m_messageList,    &MessageList::updateGroups);
+    connect(m_messageList, &MessageList::getGroupName, m_network,        &Network::getGroupName);
+    connect(m_network,     &Network::nameGroup,        m_messageList,    &MessageList::nameGroup);
+    connect(m_messageList, &MessageList::groupSelected,m_messageHistory, &MessageHistory::groupSelected);
+    connect(m_messageHistory, &MessageHistory::sendGroupMessage, m_network, &Network::sendGroupMessage);
+    connect(m_network,     &Network::recvGroupMessage, m_messageHistory, &MessageHistory::recvGroupMessage);
+    connect(m_network,     &Network::sentGroupMessage, m_messageHistory, &MessageHistory::sentGroupMessage);
 
     connect(addFriendAction, &QAction::triggered, m_addFriendDialog, &AddFriendDialog::show);
     connect(m_network, &Network::updateUsers, m_addFriendDialog, &AddFriendDialog::updateUsers);

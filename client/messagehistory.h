@@ -25,8 +25,11 @@ public slots:
     void sendMessage(QString message);
     void recvUserMessage(QString user, QString message);
     void sentUserMessage(QString user, QString message);
+    void recvGroupMessage(QString group, QString user, QString message);
+    void sentGroupMessage(QString group, QString message);
 
 signals:
     void sendUserMessage(QString user, QString message);
+    void sendGroupMessage(QString group, QString message);
     void addUser(QString user);
 };
