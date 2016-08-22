@@ -69,3 +69,43 @@ void CreateGroupDialog::retranslateUI()
     m_cancelButton->setText(QApplication::translate("CreateGroupDialog", "Cancel", 0));
 }
 
+
+void CreateGroupDialog::show()
+{
+    m_members.clear();
+    emit listUsers();
+    QDialog::show();
+}
+
+
+void CreateGroupDialog::addMembers()
+{
+    
+    updateLists();
+}
+
+
+void CreateGroupDialog::removeMembers()
+{
+    updateLists();
+}
+
+
+void CreateGroupDialog::updateLists()
+{
+    m_userList->clear();
+    for (int i = 0; i < m_users.size(); ++i)
+        m_userList->addItem(m_users[i]);
+
+    m_memberList->clear();
+    for (int i = 0; i < m_members.size(); ++i)
+        m_memberList->addItem(m_members[i]);
+}
+
+
+void CreateGroupDialog::updateUsers(QStringList users)
+{
+    m_users = users;
+    updateLists();
+}
+

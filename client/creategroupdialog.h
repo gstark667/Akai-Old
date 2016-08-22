@@ -17,6 +17,8 @@
 
 class CreateGroupDialog: public QDialog
 {
+    Q_OBJECT
+
 private:
     QGridLayout *gridLayout;
     QLabel *m_nameLabel;
@@ -27,12 +29,28 @@ private:
     QPushButton *m_removeButton;
     QPushButton *m_createButton;
     QPushButton *m_cancelButton;
+    QStringList m_users;
+    QStringList m_members;
 
 public:
     CreateGroupDialog(QWidget *parent);
 
     void setupUI();
     void retranslateUI();
+    void show();
+
+private slots:
+    void addMembers();
+    void removeMembers();
+    void updateLists();
+
+public slots:
+    void updateUsers(QStringList users);
+
+signals:
+    void listUsers();
+    void createGroup(QString name, QStringList members);
+    
 };
 
 #endif
