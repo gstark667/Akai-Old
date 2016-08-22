@@ -68,6 +68,8 @@ void MainWindow::setupUI()
     m_loginDialog = new LoginDialog(this);
     m_addFriendDialog = new AddFriendDialog(this);
     m_acceptCallDialog = new AcceptCallDialog(this);
+    m_createGroupDialog = new CreateGroupDialog(this);
+    m_createGroupDialog->show();
 
     connect(m_loginDialog, &LoginDialog::login, m_network, &Network::login);
     connect(m_network, &Network::isAuth, m_loginDialog, &LoginDialog::close);

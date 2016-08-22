@@ -10,6 +10,7 @@ RC_ICONS += icons/akai.svg
 # Input
 HEADERS += addfrienddialog.h \
            acceptcalldialog.h \
+           creategroupdialog.h \
            messagelist.h \
            logindialog.h \
            mainwindow.h \
@@ -19,6 +20,7 @@ HEADERS += addfrienddialog.h \
            audio.h
 SOURCES += addfrienddialog.cpp \
            acceptcalldialog.cpp \
+           creategroupdialog.cpp \
            messagelist.cpp \
            logindialog.cpp \
            main.cpp \
