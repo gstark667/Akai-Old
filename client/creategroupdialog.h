@@ -43,6 +43,7 @@ private slots:
     void addMembers();
     void removeMembers();
     void updateLists();
+    void doCreateGroup();
 
 public slots:
     void updateUsers(QStringList users);

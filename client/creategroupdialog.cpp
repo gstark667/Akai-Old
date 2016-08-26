@@ -1,4 +1,5 @@
 #include "creategroupdialog.h"
+#include <iostream>
 
 
 CreateGroupDialog::CreateGroupDialog(QWidget *parent): QDialog(parent)
@@ -26,6 +27,7 @@ void CreateGroupDialog::setupUI()
 
     m_userList = new QListWidget(this);
     m_userList->setObjectName(QStringLiteral("m_userList"));
+    m_userList->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     gridLayout->addWidget(m_userList, 1, 0, 2, 2);
 
@@ -36,6 +38,7 @@ void CreateGroupDialog::setupUI()
 
     m_memberList = new QListWidget(this);
     m_memberList->setObjectName(QStringLiteral("m_memberList"));
+    m_memberList->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     gridLayout->addWidget(m_memberList, 1, 3, 2, 1);
 
@@ -55,13 +58,19 @@ void CreateGroupDialog::setupUI()
     gridLayout->addWidget(m_cancelButton, 4, 0, 1, 4);
 
 
+    connect(m_addButton, &QPushButton::pressed, this, &CreateGroupDialog::addMembers);
+    connect(m_removeButton, &QPushButton::pressed, this, &CreateGroupDialog::removeMembers);
+    connect(m_createButton, &QPushButton::pressed, this, &CreateGroupDialog::doCreateGroup);
+    connect(m_cancelButton, &QPushButton::pressed, this, &QDialog::close);
+
+
     retranslateUI();
 }
 
 
 void CreateGroupDialog::retranslateUI()
 {
-    setWindowTitle(QApplication::translate("CreateGroupDialog", "this", 0));
+    setWindowTitle(QApplication::translate("CreateGroupDialog", "Create Group", 0));
     m_nameLabel->setText(QApplication::translate("CreateGroupDialog", "Group Name:", 0));
     m_addButton->setText(QApplication::translate("CreateGroupDialog", ">>", 0));
     m_removeButton->setText(QApplication::translate("CreateGroupDialog", "<<", 0));
@@ -80,13 +89,26 @@ void CreateGroupDialog::show()
 
 void CreateGroupDialog::addMembers()
 {
-    
+    std::cout << "add" << std::endl;
+    auto addUsers = m_userList->selectedItems();
+    for (auto it = addUsers.begin(); it != addUsers.end(); ++it)
+    {
+        m_users.removeAll((*it)->text());
+        m_members.append((*it)->text());
+    }
     updateLists();
 }
 
 
 void CreateGroupDialog::removeMembers()
 {
+    std::cout << "remove" << std::endl;
+    auto removeUsers = m_memberList->selectedItems();
+    for (auto it = removeUsers.begin(); it != removeUsers.end(); ++it)
+    {
+        m_users.append((*it)->text());
+        m_members.removeAll((*it)->text());
+    }
     updateLists();
 }
 
@@ -100,6 +122,12 @@ void CreateGroupDialog::updateLists()
     m_memberList->clear();
     for (int i = 0; i < m_members.size(); ++i)
         m_memberList->addItem(m_members[i]);
+}
+
+
+void CreateGroupDialog::doCreateGroup()
+{
+    emit createGroup(m_nameField->text(), m_members);
 }
 
 

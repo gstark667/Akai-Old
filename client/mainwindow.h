@@ -42,7 +42,7 @@ class MainWindow: public QMainWindow
 
 private:
     QAction *addFriendAction;
-    QAction *createChatAction;
+    QAction *createGroupAction;
     QAction *stopCallAction;
     QWidget *m_messageWidget;
     QGridLayout *m_gridLayout;
@@ -53,7 +53,7 @@ private:
     MessageInput *m_messageInput;
     QMenuBar *menubar;
     QMenu *friendsMenu;
-    QMenu *chatsMenu;
+    QMenu *groupsMenu;
     QMenu *callMenu;
     QMenu *menuOptions;
     QStatusBar *m_statusBar;

@@ -22,7 +22,7 @@ void MainWindow::setupUI()
     resize(800, 600);
 
     addFriendAction = new QAction(this);
-    createChatAction = new QAction(this);
+    createGroupAction = new QAction(this);
     stopCallAction = new QAction(this);
 
     m_messageWidget = new QWidget(this);
@@ -48,7 +48,7 @@ void MainWindow::setupUI()
     setCentralWidget(m_messageWidget);
     menubar = new QMenuBar(this);
     friendsMenu = new QMenu(menubar);
-    chatsMenu = new QMenu(menubar);
+    groupsMenu = new QMenu(menubar);
     callMenu = new QMenu(menubar);
     menuOptions = new QMenu(menubar);
     setMenuBar(menubar);
@@ -56,11 +56,11 @@ void MainWindow::setupUI()
     setStatusBar(m_statusBar);
 
     menubar->addAction(friendsMenu->menuAction());
-    menubar->addAction(chatsMenu->menuAction());
+    menubar->addAction(groupsMenu->menuAction());
     menubar->addAction(callMenu->menuAction());
     menubar->addAction(menuOptions->menuAction());
     friendsMenu->addAction(addFriendAction);
-    chatsMenu->addAction(createChatAction);
+    groupsMenu->addAction(createGroupAction);
     callMenu->addAction(stopCallAction);
 
     retranslateUI();
@@ -69,7 +69,6 @@ void MainWindow::setupUI()
     m_addFriendDialog = new AddFriendDialog(this);
     m_acceptCallDialog = new AcceptCallDialog(this);
     m_createGroupDialog = new CreateGroupDialog(this);
-    m_createGroupDialog->show();
 
     connect(m_loginDialog, &LoginDialog::login, m_network, &Network::login);
     connect(m_network, &Network::isAuth, m_loginDialog, &LoginDialog::close);
@@ -86,16 +85,19 @@ void MainWindow::setupUI()
     connect(m_network, &Network::updateFriends, m_messageList, &MessageList::updateFriends);
 
     // Groups
-    connect(m_network,     &Network::updateGroups,     m_messageList,    &MessageList::updateGroups);
-    connect(m_messageList, &MessageList::getGroupName, m_network,        &Network::getGroupName);
+    connect(m_network,     &Network::updateGroups,     m_messageList,       &MessageList::updateGroups);
+    connect(m_messageList, &MessageList::getGroupName, m_network,           &Network::getGroupName);
     connect(m_messageList, &MessageList::getGroupHistory, m_network,        &Network::getGroupHistory);
-    connect(m_network,     &Network::nameGroup,        m_messageList,    &MessageList::nameGroup);
-    connect(m_messageList, &MessageList::groupSelected,m_messageHistory, &MessageHistory::groupSelected);
+    connect(m_network,     &Network::nameGroup,        m_messageList,       &MessageList::nameGroup);
+    connect(m_messageList, &MessageList::groupSelected,m_messageHistory,    &MessageHistory::groupSelected);
     connect(m_messageHistory, &MessageHistory::sendGroupMessage, m_network, &Network::sendGroupMessage);
-    connect(m_network,     &Network::recvGroupMessage, m_messageHistory, &MessageHistory::recvGroupMessage);
-    connect(m_network,     &Network::sentGroupMessage, m_messageHistory, &MessageHistory::sentGroupMessage);
+    connect(m_network,     &Network::recvGroupMessage, m_messageHistory,    &MessageHistory::recvGroupMessage);
+    connect(m_network,     &Network::sentGroupMessage, m_messageHistory,    &MessageHistory::sentGroupMessage);
+    connect(m_network,     &Network::updateUsers,      m_createGroupDialog, &CreateGroupDialog::updateUsers);
+    connect(m_createGroupDialog, &CreateGroupDialog::listUsers, m_network,  &Network::listUsers);
 
     connect(addFriendAction, &QAction::triggered, m_addFriendDialog, &AddFriendDialog::show);
+    connect(createGroupAction, &QAction::triggered, m_createGroupDialog, &CreateGroupDialog::show);
     connect(m_network, &Network::updateUsers, m_addFriendDialog, &AddFriendDialog::updateUsers);
     connect(m_network, &Network::updateFriends, m_addFriendDialog, &AddFriendDialog::updateFriends);
     connect(m_addFriendDialog, &AddFriendDialog::listUsers, m_network, &Network::listUsers);
@@ -119,10 +121,10 @@ void MainWindow::retranslateUI()
 {
     setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
     addFriendAction->setText(QApplication::translate("MainWindow", "Add Friend", 0));
-    createChatAction->setText(QApplication::translate("MainWindow", "Create Chat", 0));
+    createGroupAction->setText(QApplication::translate("MainWindow", "Create Group", 0));
     stopCallAction->setText(QApplication::translate("MainWindow", "Stop Call", 0));
     friendsMenu->setTitle(QApplication::translate("MainWindow", "&Friends", 0));
-    chatsMenu->setTitle(QApplication::translate("MainWindow", "&Chats", 0));
+    groupsMenu->setTitle(QApplication::translate("MainWindow", "&Groups", 0));
     callMenu->setTitle(QApplication::translate("MainWindow", "&Call", 0));
     menuOptions->setTitle(QApplication::translate("MainWindow", "Options", 0));
 }
