@@ -29,7 +29,7 @@ void Network::login(QString username, QString password)
     sendMessage("USER " + username + " " + password);
     sendMessage("FRIENDS");
     sendMessage("MSGHIST");
-    sendMessage("GROUPS");
+    listGroups();
 }
 
 
@@ -106,6 +106,21 @@ void Network::removeFriend(QString name)
 }
 
 
+void Network::listGroups()
+{
+    sendMessage("GROUPS");
+}
+
+
+void Network::createGroup(QString name, QList<QString> members)
+{
+    QString message = "CREATE " + name;
+    for (auto it = members.begin(); it != members.end(); ++it)
+        message += " " + *it;
+    sendMessage(message.simplified());
+}
+
+
 QStringList Network::splitMessage(QString message)
 {
     QStringList split = message.split(" ");
@@ -173,6 +188,10 @@ void Network::handleMessage(QString message)
     else if (argv[0] == "GRPNAME" && argc == 3)
     {
         emit nameGroup(argv[1], argv[2]);
+    }
+    else if (argv[0] == "CREATED" && argc == 3)
+    {
+        emit updateGroups(argv[1].simplified().split(" "));
     }
     else if (argv[0] == "CALL" && argc == 4)
     {

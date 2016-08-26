@@ -95,6 +95,7 @@ void MainWindow::setupUI()
     connect(m_network,     &Network::sentGroupMessage, m_messageHistory,    &MessageHistory::sentGroupMessage);
     connect(m_network,     &Network::updateUsers,      m_createGroupDialog, &CreateGroupDialog::updateUsers);
     connect(m_createGroupDialog, &CreateGroupDialog::listUsers, m_network,  &Network::listUsers);
+    connect(m_createGroupDialog, &CreateGroupDialog::createGroup, m_network,&Network::createGroup);
 
     connect(addFriendAction, &QAction::triggered, m_addFriendDialog, &AddFriendDialog::show);
     connect(createGroupAction, &QAction::triggered, m_createGroupDialog, &CreateGroupDialog::show);

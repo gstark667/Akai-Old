@@ -128,6 +128,7 @@ void CreateGroupDialog::updateLists()
 void CreateGroupDialog::doCreateGroup()
 {
     emit createGroup(m_nameField->text(), m_members);
+    close();
 }
 
 
