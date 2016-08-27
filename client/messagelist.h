@@ -42,6 +42,28 @@ signals:
 };
 
 
+class GroupOwnerMenu: public QMenu
+{
+    Q_OBJECT
+
+private:
+    QString m_group;
+
+public:
+    GroupOwnerMenu(QString group, QWidget *parent);
+
+private slots:
+    void addSelected();
+    void removeSelected();
+    void disbandSelected();
+
+signals:
+    void add(QString group);
+    void remove(QString group);
+    void disband(QString group);
+};
+
+
 class MessageList: public QTabWidget
 {
     Q_OBJECT
@@ -60,16 +82,21 @@ public:
 public slots:
     void updateFriends(QStringList friends);
     void updateGroups(QStringList groups);
+    void ownGroups(QStringList groups);
     void nameGroup(QString group, QString name);
     void addFriend(QString);
     void addGroup(QString);
+    void ownGroup(QString);
     void showFriendMenu(const QPoint &pos);
+    void showGroupMenu(const QPoint &pos);
 
 signals:
     void getGroupName(QString group);
+    void listOwnedGroups();
     void getGroupHistory(QString group);
     void friendSelected(QListWidgetItem *item);
     void groupSelected(QListWidgetItem *item);
     void callFriend(QString name);
     void removeFriend(QString name);
+    void disbandGroup(QString group);
 };

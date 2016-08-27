@@ -23,6 +23,33 @@ void FriendMenu::unfriendSelected()
 }
 
 
+GroupOwnerMenu::GroupOwnerMenu(QString group, QWidget *parent): QMenu(parent)
+{
+    m_group = group;
+    addAction("Add", this, &GroupOwnerMenu::addSelected);
+    addAction("Remove", this, &GroupOwnerMenu::removeSelected);
+    addAction("Disband", this, &GroupOwnerMenu::disbandSelected);
+}
+
+
+void GroupOwnerMenu::addSelected()
+{
+    emit add(m_group);
+}
+
+
+void GroupOwnerMenu::removeSelected()
+{
+    emit remove(m_group);
+}
+
+
+void GroupOwnerMenu::disbandSelected()
+{
+    emit disband(m_group);
+}
+
+
 MessageList::MessageList(QWidget *parent): QTabWidget(parent)
 {
     setupUI();
@@ -39,12 +66,13 @@ void MessageList::setupUI()
     m_friendsList = new QListWidget(this);
     m_friendsList->setContextMenuPolicy(Qt::CustomContextMenu);
     m_groupsList = new QListWidget(this);
+    m_groupsList->setContextMenuPolicy(Qt::CustomContextMenu);
 
     addTab(m_friendsList, "Friends");
     addTab(m_groupsList, "Groups");
 
-
     connect(m_friendsList, &QListWidget::customContextMenuRequested, this, &MessageList::showFriendMenu);
+    connect(m_groupsList, &QListWidget::customContextMenuRequested, this, &MessageList::showGroupMenu);
     connect(m_friendsList, &QListWidget::itemPressed, this, &MessageList::friendSelected);
     connect(m_groupsList, &QListWidget::itemPressed, this, &MessageList::groupSelected);
 }
@@ -74,6 +102,17 @@ void MessageList::updateGroups(QStringList groups)
     {
         addGroup(groups[i]);
         emit getGroupName(groups[i]);
+    }
+    emit listOwnedGroups();
+}
+
+
+void MessageList::ownGroups(QStringList groups)
+{
+    std::cout << "Owning groups" << std::endl;
+    for (int i = 0; i < groups.size(); ++i)
+    {
+        ownGroup(groups[i]);
     }
 }
 
@@ -113,8 +152,22 @@ void MessageList::addGroup(QString group)
     QListWidgetItem *new_group = new QListWidgetItem(m_groupsList);
     new_group->setText(group);
     new_group->setData(Qt::UserRole, group);
+    new_group->setData(Qt::UserRole+1, "member");
     m_groupsList->addItem(new_group);
     emit getGroupHistory(group);
+}
+
+
+void MessageList::ownGroup(QString group)
+{
+    for (int i = 0; i < m_groupsList->count(); ++i)
+    {
+        std::cout << m_groupsList->item(i)->text().toStdString() << std::endl;
+        if (m_groupsList->item(i)->data(Qt::UserRole) == group)
+        {
+            m_groupsList->item(i)->setData(Qt::UserRole+1, "owner");
+        }
+    }
 }
 
 
@@ -133,5 +186,23 @@ void MessageList::showFriendMenu(const QPoint &pos)
     friendMenu.exec(globalPos);
 
     friendMenu.disconnect();
-    std::cout << pointedFriend->text().toStdString() << std::endl;
+}
+
+
+void MessageList::showGroupMenu(const QPoint &pos)
+{
+    QPoint globalPos = m_groupsList->mapToGlobal(pos);
+
+    QListWidgetItem *pointedGroup = m_groupsList->itemAt(pos);
+    if (!pointedGroup)
+        return;
+
+    std::cout << pointedGroup->data(Qt::UserRole+1).toString().toStdString() << std::endl;
+    if (pointedGroup->data(Qt::UserRole+1) == "owner")
+    {
+        GroupOwnerMenu groupMenu(pointedGroup->data(Qt::UserRole).toString(), this);
+        connect(&groupMenu, &GroupOwnerMenu::disband, this, &MessageList::disbandGroup);
+        groupMenu.exec(globalPos);
+        groupMenu.disconnect();
+    }
 }

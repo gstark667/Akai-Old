@@ -34,7 +34,9 @@ public slots:
     void callFriend(QString name, quint16 port);
     void removeFriend(QString name);
     void listGroups();
+    void listOwnedGroups();
     void createGroup(QString name, QList<QString> members);
+    void disbandGroup(QString name);
 
 signals:
     void isAuth();
@@ -46,6 +48,7 @@ signals:
 
     void updateFriends(QStringList friends);
     void updateGroups(QStringList groups);
+    void ownGroups(QStringList groups);
     void nameGroup(QString group, QString name);
     void updateUsers(QStringList friends);
 
