@@ -1,3 +1,6 @@
+#ifndef MESSAGEHISTORY_H
+#define MESSAGEHISTORY_H
+
 #include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QListWidgetItem>
 
@@ -11,6 +14,7 @@ class MessageHistory: public QTextBrowser
 private:
     std::map<QString, QString> m_userMessages;
     std::map<QString, QString> m_groupMessages;
+    std::map<QString, QString> m_groupLastSender;
     QString m_currentFriend;
     QString m_currentGroup;
 
@@ -25,8 +29,13 @@ public slots:
     void sendMessage(QString message);
     void recvUserMessage(QString user, QString message);
     void sentUserMessage(QString user, QString message);
+    void recvGroupMessage(QString group, QString user, QString message);
+    void sentGroupMessage(QString group, QString message);
 
 signals:
     void sendUserMessage(QString user, QString message);
+    void sendGroupMessage(QString group, QString message);
     void addUser(QString user);
 };
+
+#endif

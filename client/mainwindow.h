@@ -29,6 +29,8 @@
 #include "messageinput.h"
 #include "messagehistory.h"
 #include "logindialog.h"
+#include "creategroupdialog.h"
+#include "editgroupdialog.h"
 #include "addfrienddialog.h"
 #include "acceptcalldialog.h"
 #include "network.h"
@@ -41,7 +43,7 @@ class MainWindow: public QMainWindow
 
 private:
     QAction *addFriendAction;
-    QAction *createChatAction;
+    QAction *createGroupAction;
     QAction *stopCallAction;
     QWidget *m_messageWidget;
     QGridLayout *m_gridLayout;
@@ -52,7 +54,7 @@ private:
     MessageInput *m_messageInput;
     QMenuBar *menubar;
     QMenu *friendsMenu;
-    QMenu *chatsMenu;
+    QMenu *groupsMenu;
     QMenu *callMenu;
     QMenu *menuOptions;
     QStatusBar *m_statusBar;
@@ -60,6 +62,8 @@ private:
     LoginDialog *m_loginDialog;
     AddFriendDialog *m_addFriendDialog;
     AcceptCallDialog *m_acceptCallDialog;
+    CreateGroupDialog *m_createGroupDialog;
+    EditGroupDialog *m_editGroupDialog;
     Network *m_network;
     Audio *m_audio;
 

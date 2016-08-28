@@ -1,3 +1,6 @@
+#ifndef FRIENDMENU_H
+#define FRIENDMENU_H
+
 #include <QtCore/QVariant>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
@@ -42,6 +45,26 @@ signals:
 };
 
 
+class GroupOwnerMenu: public QMenu
+{
+    Q_OBJECT
+
+private:
+    QString m_group;
+
+public:
+    GroupOwnerMenu(QString group, QWidget *parent);
+
+private slots:
+    void editSelected();
+    void disbandSelected();
+
+signals:
+    void edit(QString group);
+    void disband(QString group);
+};
+
+
 class MessageList: public QTabWidget
 {
     Q_OBJECT
@@ -60,13 +83,25 @@ public:
 public slots:
     void updateFriends(QStringList friends);
     void updateGroups(QStringList groups);
-    void addFriend(QString);
-    void addGroup(QString);
+    void ownGroups(QStringList groups);
+    void nameGroup(QString group, QString name);
+    void addFriend(QString name);
+    void addGroup(QString group);
+    void ownGroup(QString group);
+    void removeGroup(QString group);
     void showFriendMenu(const QPoint &pos);
+    void showGroupMenu(const QPoint &pos);
 
 signals:
+    void getGroupName(QString group);
+    void listOwnedGroups();
+    void getGroupHistory(QString group);
     void friendSelected(QListWidgetItem *item);
     void groupSelected(QListWidgetItem *item);
     void callFriend(QString name);
     void removeFriend(QString name);
+    void editGroup(QString group);
+    void disbandGroup(QString group);
 };
+
+#endif

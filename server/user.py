@@ -63,6 +63,8 @@ class User:
         except UnicodeDecodeError:
             self.send_message('ERROR :Invalid unicode')
 
+        print(data)
+
         return True
     
     def close(self):
@@ -96,6 +98,18 @@ class User:
             else:
                 self.send_message('USERMSG %s :%s' % (sender['name'], message['message']))
 
+    def group_history(self, gid):
+        for message in database.get_group_messages(self.name, gid):
+            sender = database.get_user_by_id(message['sender'])
+            if sender['name'] == self.name:
+                self.send_message('GRPMSGSNT %s :%s' % (gid, message['message']))
+            else:
+                self.send_message('GRPMSG %s %s :%s' % (gid, sender['name'], message['message']))
+
+    def group_name(self, gid):
+        name = database.get_group_name(self.name, gid)
+        self.send_message('GRPNAME %s %s' % (gid, name))
+
     def friend(self, friend_name, message=None):
         database.add_friend(self.name, friend_name)
         try:
@@ -122,6 +136,11 @@ class User:
             raise UserException('User "%s" is not your friend' % (self.name))
         self.send_message('USERMSG %s :%s' % (name, message))
 
+    def grpmsg(self, gid, user, message):
+        if user == self.name:
+            return
+        self.send_message('GRPMSG %s %s :%s' % (gid, user, message))
+
     def send_usermsg(self, name, message):
         database.save_message(self.name, name, message)
         self.send_message('USERMSGSNT %s :%s' % (name, message))
@@ -130,6 +149,16 @@ class User:
             user.usermsg(self.name, message)
         except UserException:
             pass
+
+    def send_grpmsg(self, gid, message):
+        database.save_group_message(self.name, gid, message)
+        self.send_message('GRPMSGSNT %s :%s' % (gid, message))
+        for user in database.get_group_members(self.name, gid):
+            try:
+                user = get_user(user)
+                user.grpmsg(gid, self.name, message)
+            except UserException:
+                pass
 
     def friends(self):
         friends = database.list_friends(self.name)
@@ -147,12 +176,58 @@ class User:
         user = get_user(name)
         user.call(self.name, self.addr[0], port)
 
+    def create(self, name, *members):
+        gid = database.create_group(self.name, name, members)
+        self.send_message('CREATED %s %s' % (gid, name))
+
+    def add(self, gid, user):
+        database.add_group_member(self.name, gid, user)
+        self.send_message('ADDED %s %s' % (gid, user))
+        try:
+            get_user(user).send_message('ADDTO %s' % (gid))
+        except:
+            pass
+
+    def remove(self, gid, user):
+        database.remove_group_member(self.name, gid, user)
+        self.send_message('REMOVED %s %s' % (gid, user))
+        try:
+            get_user(user).send_message('REMOVEFROM %s' % (gid))
+        except:
+            pass
+
+    def disband(self, gid):
+        database.delete_group(self.name, gid)
+        self.send_message('DISBANDED %s' % (gid))
+
     def users(self):
         users = database.list_users()
         message = 'USERS :'
         for user in users:
             if self.name != user:
                 message += user + ' '
+        self.send_message(message.strip())
+
+    def groups(self):
+        groups = database.get_groups(self.name)
+        message = 'GROUPS :'
+        for group in groups:
+            message += group + ' '
+        self.send_message(message.strip())
+
+    def owned(self):
+        groups = database.get_owned_groups(self.name)
+        message = 'OWNED :'
+        for group in groups:
+            message += group + ' '
+        self.send_message(message.strip())
+
+    def members(self, gid):
+        members = database.get_group_members(self.name, gid)
+        message = 'MEMBERS %s :' % (gid)
+        for member in members:
+            if member != self.name:
+                message += member + ' '
         self.send_message(message.strip())
 
     def quit(self):
@@ -169,10 +244,20 @@ class User:
             'USER'    : self.authenticate,
             'USERS'   : self.users,
             'USERMSG' : self.send_usermsg,
+            'GRPMSG'  : self.send_grpmsg,
             'MSGHIST' : self.message_history,
+            'GRPHIST' : self.group_history,
+            'GRPNAME' : self.group_name,
             'FRIEND'  : self.friend,
             'UNFRIEND': self.unfriend,
             'FRIENDS' : self.friends,
+            'GROUPS'  : self.groups,
+            'OWNED'   : self.owned,
+            'MEMBERS' : self.members,
+            'CREATE'  : self.create,
+            'ADD'     : self.add,
+            'REMOVE'  : self.remove,
+            'DISBAND' : self.disband,
             'CALL'    : self.send_call,
             'QUIT'    : self.quit
         }

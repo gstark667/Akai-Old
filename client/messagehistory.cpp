@@ -28,7 +28,7 @@ void MessageHistory::friendSelected(QListWidgetItem *item)
 void MessageHistory::groupSelected(QListWidgetItem *item)
 {
     m_currentFriend = "";
-    m_currentGroup  = item->text();
+    m_currentGroup  = item->data(Qt::UserRole).toString();
     if (m_groupMessages.find(m_currentGroup) == m_groupMessages.end())
         m_groupMessages[m_currentGroup] = "";
     updateMessages();
@@ -37,8 +37,12 @@ void MessageHistory::groupSelected(QListWidgetItem *item)
 
 void MessageHistory::sendMessage(QString message)
 {
-    emit sendUserMessage(m_currentFriend, message);
+    if (m_currentFriend != "")
+        emit sendUserMessage(m_currentFriend, message);
+    if (m_currentGroup != "")
+        emit sendGroupMessage(m_currentGroup, message);
 }
+
 
 void MessageHistory::recvUserMessage(QString user, QString message)
 {
@@ -53,6 +57,7 @@ void MessageHistory::recvUserMessage(QString user, QString message)
         updateMessages();
 }
 
+
 void MessageHistory::sentUserMessage(QString user, QString message)
 {
     if (m_userMessages.find(user) == m_userMessages.end())
@@ -65,3 +70,38 @@ void MessageHistory::sentUserMessage(QString user, QString message)
     if (user == m_currentFriend)
         updateMessages();
 }
+
+
+void MessageHistory::recvGroupMessage(QString group, QString user, QString message)
+{
+    if (m_groupMessages.find(group) == m_groupMessages.end())
+    {
+        m_groupMessages[group] = "";
+        m_groupLastSender[group] = "";
+    }
+
+    if (m_groupLastSender[group] == user)
+        m_groupMessages[group] += ("<p class='recv-message'>" + message.toHtmlEscaped() + "</p>");
+    else
+        m_groupMessages[group] += ("<p class='recv-message'><h4>" + user + ":</h4>" + message.toHtmlEscaped() + "</p>");
+
+    m_groupLastSender[group] = user;
+    if (group == m_currentGroup)
+        updateMessages();
+}
+
+
+void MessageHistory::sentGroupMessage(QString group, QString message)
+{
+    if (m_groupMessages.find(group) == m_groupMessages.end())
+    {
+        m_groupMessages[group] = "";
+        m_groupLastSender[group] = "";
+    }
+
+    m_groupMessages[group] += ("<p class='sent-message'>" + message.toHtmlEscaped() + "</p>");
+    m_groupLastSender[group] = "";
+    if (group == m_currentGroup)
+        updateMessages();
+}
+
