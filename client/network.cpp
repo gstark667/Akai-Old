@@ -29,7 +29,6 @@ void Network::login(QString username, QString password)
     sendMessage("USER " + username + " " + password);
     sendMessage("FRIENDS");
     sendMessage("MSGHIST");
-    listGroups();
 }
 
 
@@ -53,13 +52,8 @@ void Network::sendMessage(QString message)
 
 void Network::sendUserMessage(QString user, QString message)
 {
+    std::cout << "Sending " + message.toStdString() + " to " + user.toStdString() << std::endl;
     sendMessage("USERMSG " + user + " :" + message);
-}
-
-
-void Network::sendGroupMessage(QString group, QString message)
-{
-    sendMessage("GRPMSG " + group + " :" + message);
 }
 
 
@@ -72,18 +66,6 @@ void Network::listUsers()
 void Network::listFriends()
 {
     sendMessage("FRIENDS");
-}
-
-
-void Network::getGroupName(QString group)
-{
-    sendMessage("GRPNAME " + group);
-}
-
-
-void Network::getGroupHistory(QString group)
-{
-    sendMessage("GRPHIST " + group);
 }
 
 
@@ -103,51 +85,6 @@ void Network::callFriend(QString name, quint16 port)
 void Network::removeFriend(QString name)
 {
     sendMessage("UNFRIEND " + name);
-}
-
-
-void Network::listGroups()
-{
-    sendMessage("GROUPS");
-}
-
-
-void Network::listOwnedGroups()
-{
-    sendMessage("OWNED");
-}
-
-
-void Network::listGroupMembers(QString group)
-{
-    sendMessage("MEMBERS " + group);
-}
-
-
-void Network::createGroup(QString name, QList<QString> members)
-{
-    QString message = "CREATE " + name;
-    for (auto it = members.begin(); it != members.end(); ++it)
-        message += " " + *it;
-    sendMessage(message.simplified());
-}
-
-
-void Network::addGroupMember(QString group, QString member)
-{
-    sendMessage("ADD " + group + " " + member);
-}
-
-
-void Network::removeGroupMember(QString group, QString member)
-{
-    sendMessage("REMOVE " + group + " " + member);
-}
-
-
-void Network::disbandGroup(QString group)
-{
-    sendMessage("DISBAND " + group);
 }
 
 
@@ -194,14 +131,6 @@ void Network::handleMessage(QString message)
     {
         emit sentUserMessage(argv[1], argv[2]);
     }
-    else if (argv[0] == "GRPMSG" && argc == 4)
-    {
-        emit recvGroupMessage(argv[1], argv[2], argv[3]);
-    }
-    else if (argv[0] == "GRPMSGSNT" && argc == 3)
-    {
-        emit sentGroupMessage(argv[1], argv[2]);
-    }
     else if (argv[0] == "FRIENDS" && argc == 2)
     {
         std::cout << "Network got userlist" << std::endl;
@@ -210,34 +139,6 @@ void Network::handleMessage(QString message)
     else if (argv[0] == "USERS" && argc == 2)
     {
         emit updateUsers(argv[1].simplified().split(" "));
-    }
-    else if (argv[0] == "GROUPS" && argc == 2)
-    {
-        emit updateGroups(argv[1].simplified().split(" "));
-    }
-    else if (argv[0] == "OWNED" && argc == 2)
-    {
-        emit ownGroups(argv[1].simplified().split(" "));
-    }
-    else if (argv[0] == "MEMBERS" && argc == 3)
-    {
-        emit updateGroupMembers(argv[1], argv[2].simplified().split(" "));
-    }
-    else if (argv[0] == "ADDTO" && argc == 2)
-    {
-        emit addGroup(argv[1]);
-    }
-    else if (argv[0] == "REMOVEFROM" && argc == 2)
-    {
-        emit removeGroup(argv[1]);
-    }
-    else if (argv[0] == "GRPNAME" && argc == 3)
-    {
-        emit nameGroup(argv[1], argv[2]);
-    }
-    else if (argv[0] == "CREATED" && argc == 3)
-    {
-        emit updateGroups(argv[1].simplified().split(" "));
     }
     else if (argv[0] == "CALL" && argc == 4)
     {
