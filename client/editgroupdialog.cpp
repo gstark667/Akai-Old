@@ -19,28 +19,28 @@ void EditGroupDialog::setupUI()
     m_userList->setObjectName(QStringLiteral("m_userList"));
     m_userList->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-    gridLayout->addWidget(m_userList, 1, 0, 2, 2);
+    gridLayout->addWidget(m_userList, 0, 0, 4, 1);
 
     m_addButton = new QPushButton(this);
     m_addButton->setObjectName(QStringLiteral("m_addButton"));
 
-    gridLayout->addWidget(m_addButton, 1, 2, 1, 1);
+    gridLayout->addWidget(m_addButton, 1, 1, 1, 1);
 
     m_memberList = new QListWidget(this);
     m_memberList->setObjectName(QStringLiteral("m_memberList"));
     m_memberList->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-    gridLayout->addWidget(m_memberList, 1, 3, 2, 1);
+    gridLayout->addWidget(m_memberList, 0, 2, 4, 1);
 
     m_removeButton = new QPushButton(this);
     m_removeButton->setObjectName(QStringLiteral("m_removeButton"));
 
-    gridLayout->addWidget(m_removeButton, 2, 2, 1, 1);
+    gridLayout->addWidget(m_removeButton, 2, 1, 1, 1);
 
     m_closeButton = new QPushButton(this);
     m_closeButton->setObjectName(QStringLiteral("m_closeButton"));
 
-    gridLayout->addWidget(m_closeButton, 3, 0, 1, 4);
+    gridLayout->addWidget(m_closeButton, 4, 0, 1, 4);
 
     connect(m_addButton, &QPushButton::pressed, this, &EditGroupDialog::doAddMembers);
     connect(m_removeButton, &QPushButton::pressed, this, &EditGroupDialog::doRemoveMembers);
@@ -63,6 +63,9 @@ void EditGroupDialog::retranslateUI()
 void EditGroupDialog::show()
 {
     m_members.clear();
+    m_memberList->clear();
+    m_users.clear();
+    m_userList->clear();
     emit listUsers();
     emit listGroupMembers(m_group);
     QDialog::show();
@@ -128,6 +131,7 @@ void EditGroupDialog::updateMembers(QString group, QStringList members)
 {
     if (m_group == group)
         m_members = members;
+    m_members.removeAll("");
     updateLists();
 }
 

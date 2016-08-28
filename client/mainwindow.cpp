@@ -92,6 +92,8 @@ void MainWindow::setupUI()
     connect(m_messageList, &MessageList::getGroupHistory, m_network,        &Network::getGroupHistory);
     connect(m_network,     &Network::nameGroup,        m_messageList,       &MessageList::nameGroup);
     connect(m_network,     &Network::ownGroups,        m_messageList,       &MessageList::ownGroups);
+    connect(m_network,     &Network::addGroup,         m_messageList,       &MessageList::addGroup);
+    connect(m_network,     &Network::removeGroup,      m_messageList,       &MessageList::removeGroup);
     connect(m_messageList, &MessageList::groupSelected,m_messageHistory,    &MessageHistory::groupSelected);
     connect(m_messageList, &MessageList::disbandGroup, m_network,           &Network::disbandGroup);
     connect(m_messageList, &MessageList::editGroup,    m_editGroupDialog,   &EditGroupDialog::editGroup);

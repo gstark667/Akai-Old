@@ -29,33 +29,33 @@ void CreateGroupDialog::setupUI()
     m_userList->setObjectName(QStringLiteral("m_userList"));
     m_userList->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-    gridLayout->addWidget(m_userList, 1, 0, 2, 2);
+    gridLayout->addWidget(m_userList, 1, 0, 4, 2);
 
     m_addButton = new QPushButton(this);
     m_addButton->setObjectName(QStringLiteral("m_addButton"));
 
-    gridLayout->addWidget(m_addButton, 1, 2, 1, 1);
+    gridLayout->addWidget(m_addButton, 2, 2, 1, 1);
 
     m_memberList = new QListWidget(this);
     m_memberList->setObjectName(QStringLiteral("m_memberList"));
     m_memberList->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-    gridLayout->addWidget(m_memberList, 1, 3, 2, 1);
+    gridLayout->addWidget(m_memberList, 1, 3, 4, 1);
 
     m_removeButton = new QPushButton(this);
     m_removeButton->setObjectName(QStringLiteral("m_removeButton"));
 
-    gridLayout->addWidget(m_removeButton, 2, 2, 1, 1);
+    gridLayout->addWidget(m_removeButton, 3, 2, 1, 1);
 
     m_createButton = new QPushButton(this);
     m_createButton->setObjectName(QStringLiteral("m_createButton"));
 
-    gridLayout->addWidget(m_createButton, 3, 0, 1, 4);
+    gridLayout->addWidget(m_createButton, 5, 0, 1, 4);
 
     m_cancelButton = new QPushButton(this);
     m_cancelButton->setObjectName(QStringLiteral("m_cancelButton"));
 
-    gridLayout->addWidget(m_cancelButton, 4, 0, 1, 4);
+    gridLayout->addWidget(m_cancelButton, 6, 0, 1, 4);
 
 
     connect(m_addButton, &QPushButton::pressed, this, &CreateGroupDialog::addMembers);

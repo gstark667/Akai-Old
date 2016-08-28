@@ -94,7 +94,6 @@ void MessageList::updateGroups(QStringList groups)
     for (int i = 0; i < groups.size(); ++i)
     {
         addGroup(groups[i]);
-        emit getGroupName(groups[i]);
     }
     emit listOwnedGroups();
 }
@@ -147,7 +146,21 @@ void MessageList::addGroup(QString group)
     new_group->setData(Qt::UserRole, group);
     new_group->setData(Qt::UserRole+1, "member");
     m_groupsList->addItem(new_group);
+    emit getGroupName(group);
     emit getGroupHistory(group);
+}
+
+
+void MessageList::removeGroup(QString group)
+{
+    for (int i = 0; i < m_groupsList->count(); ++i)
+    {
+        if (m_groupsList->item(i)->data(Qt::UserRole) == group)
+        {
+            m_groupsList->takeItem(i);
+            break;
+        }
+    }
 }
 
 

@@ -223,6 +223,14 @@ void Network::handleMessage(QString message)
     {
         emit updateGroupMembers(argv[1], argv[2].simplified().split(" "));
     }
+    else if (argv[0] == "ADDTO" && argc == 2)
+    {
+        emit addGroup(argv[1]);
+    }
+    else if (argv[0] == "REMOVEFROM" && argc == 2)
+    {
+        emit removeGroup(argv[1]);
+    }
     else if (argv[0] == "GRPNAME" && argc == 3)
     {
         emit nameGroup(argv[1], argv[2]);

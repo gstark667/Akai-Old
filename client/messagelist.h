@@ -85,9 +85,10 @@ public slots:
     void updateGroups(QStringList groups);
     void ownGroups(QStringList groups);
     void nameGroup(QString group, QString name);
-    void addFriend(QString);
-    void addGroup(QString);
-    void ownGroup(QString);
+    void addFriend(QString name);
+    void addGroup(QString group);
+    void ownGroup(QString group);
+    void removeGroup(QString group);
     void showFriendMenu(const QPoint &pos);
     void showGroupMenu(const QPoint &pos);
 

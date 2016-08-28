@@ -55,6 +55,8 @@ signals:
     void updateFriends(QStringList friends);
     void updateGroups(QStringList groups);
     void updateGroupMembers(QString group, QStringList members);
+    void addGroup(QString group);
+    void removeGroup(QString group);
     void ownGroups(QStringList groups);
     void nameGroup(QString group, QString name);
     void updateUsers(QStringList friends);
