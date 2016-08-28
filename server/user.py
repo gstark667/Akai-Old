@@ -183,10 +183,18 @@ class User:
     def add(self, gid, user):
         database.add_group_member(self.name, gid, user)
         self.send_message('ADDED %s %s' % (gid, user))
+        try:
+            get_user(user).send_message('ADDTO %s' % (gid))
+        except:
+            pass
 
     def remove(self, gid, user):
         database.remove_group_member(self.name, gid, user)
         self.send_message('REMOVED %s %s' % (gid, user))
+        try:
+            get_user(user).send_message('REMOVEFROM %s' % (gid))
+        except:
+            pass
 
     def disband(self, gid):
         database.delete_group(self.name, gid)
