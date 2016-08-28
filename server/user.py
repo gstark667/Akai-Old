@@ -63,6 +63,8 @@ class User:
         except UnicodeDecodeError:
             self.send_message('ERROR :Invalid unicode')
 
+        print(data)
+
         return True
     
     def close(self):
@@ -216,7 +218,8 @@ class User:
         members = database.get_group_members(self.name, gid)
         message = 'MEMBERS %s :' % (gid)
         for member in members:
-            message += member + ' '
+            if member != self.name:
+                message += member + ' '
         self.send_message(message.strip())
 
     def quit(self):
