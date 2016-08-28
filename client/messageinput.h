@@ -1,3 +1,6 @@
+#ifndef MESSAGEINPUT_H
+#define MESSAGEINPUT_H
+
 #include <QtGui/QKeyEvent>
 #include <QtWidgets/QLineEdit>
 
@@ -18,3 +21,5 @@ public:
 signals:
     void sendMessage(QString message);
 };
+
+#endif
