@@ -69,6 +69,7 @@ void MainWindow::setupUI()
     m_addFriendDialog = new AddFriendDialog(this);
     m_acceptCallDialog = new AcceptCallDialog(this);
     m_createGroupDialog = new CreateGroupDialog(this);
+    m_editGroupDialog = new EditGroupDialog(this);
 
     connect(m_loginDialog, &LoginDialog::login, m_network, &Network::login);
     connect(m_network, &Network::isAuth, m_loginDialog, &LoginDialog::close);
@@ -93,11 +94,18 @@ void MainWindow::setupUI()
     connect(m_network,     &Network::ownGroups,        m_messageList,       &MessageList::ownGroups);
     connect(m_messageList, &MessageList::groupSelected,m_messageHistory,    &MessageHistory::groupSelected);
     connect(m_messageList, &MessageList::disbandGroup, m_network,           &Network::disbandGroup);
+    connect(m_messageList, &MessageList::editGroup,    m_editGroupDialog,   &EditGroupDialog::editGroup);
     connect(m_messageHistory, &MessageHistory::sendGroupMessage, m_network, &Network::sendGroupMessage);
     connect(m_network,     &Network::recvGroupMessage, m_messageHistory,    &MessageHistory::recvGroupMessage);
     connect(m_network,     &Network::sentGroupMessage, m_messageHistory,    &MessageHistory::sentGroupMessage);
     connect(m_network,     &Network::updateUsers,      m_createGroupDialog, &CreateGroupDialog::updateUsers);
+    connect(m_network,     &Network::updateUsers,      m_editGroupDialog,   &EditGroupDialog::updateUsers);
+    connect(m_network,   &Network::updateGroupMembers, m_editGroupDialog,   &EditGroupDialog::updateMembers);
     connect(m_createGroupDialog, &CreateGroupDialog::listUsers, m_network,  &Network::listUsers);
+    connect(m_editGroupDialog,   &EditGroupDialog::listUsers, m_network,  &Network::listUsers);
+    connect(m_editGroupDialog,   &EditGroupDialog::listGroupMembers, m_network, &Network::listGroupMembers);
+    connect(m_editGroupDialog,   &EditGroupDialog::addMember, m_network,    &Network::addGroupMember);
+    connect(m_editGroupDialog,   &EditGroupDialog::removeMember, m_network, &Network::removeGroupMember);
     connect(m_createGroupDialog, &CreateGroupDialog::createGroup, m_network,&Network::createGroup);
 
     connect(addFriendAction, &QAction::triggered, m_addFriendDialog, &AddFriendDialog::show);

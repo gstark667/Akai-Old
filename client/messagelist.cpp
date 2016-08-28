@@ -26,21 +26,14 @@ void FriendMenu::unfriendSelected()
 GroupOwnerMenu::GroupOwnerMenu(QString group, QWidget *parent): QMenu(parent)
 {
     m_group = group;
-    addAction("Add", this, &GroupOwnerMenu::addSelected);
-    addAction("Remove", this, &GroupOwnerMenu::removeSelected);
+    addAction("Edit", this, &GroupOwnerMenu::editSelected);
     addAction("Disband", this, &GroupOwnerMenu::disbandSelected);
 }
 
 
-void GroupOwnerMenu::addSelected()
+void GroupOwnerMenu::editSelected()
 {
-    emit add(m_group);
-}
-
-
-void GroupOwnerMenu::removeSelected()
-{
-    emit remove(m_group);
+    emit edit(m_group);
 }
 
 
@@ -201,6 +194,7 @@ void MessageList::showGroupMenu(const QPoint &pos)
     if (pointedGroup->data(Qt::UserRole+1) == "owner")
     {
         GroupOwnerMenu groupMenu(pointedGroup->data(Qt::UserRole).toString(), this);
+        connect(&groupMenu, &GroupOwnerMenu::edit, this, &MessageList::editGroup);
         connect(&groupMenu, &GroupOwnerMenu::disband, this, &MessageList::disbandGroup);
         groupMenu.exec(globalPos);
         groupMenu.disconnect();

@@ -1,3 +1,6 @@
+#ifndef FRIENDMENU_H
+#define FRIENDMENU_H
+
 #include <QtCore/QVariant>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
@@ -53,13 +56,11 @@ public:
     GroupOwnerMenu(QString group, QWidget *parent);
 
 private slots:
-    void addSelected();
-    void removeSelected();
+    void editSelected();
     void disbandSelected();
 
 signals:
-    void add(QString group);
-    void remove(QString group);
+    void edit(QString group);
     void disband(QString group);
 };
 
@@ -98,5 +99,8 @@ signals:
     void groupSelected(QListWidgetItem *item);
     void callFriend(QString name);
     void removeFriend(QString name);
+    void editGroup(QString group);
     void disbandGroup(QString group);
 };
+
+#endif

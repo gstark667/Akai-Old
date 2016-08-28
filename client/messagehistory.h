@@ -1,3 +1,6 @@
+#ifndef MESSAGEHISTORY_H
+#define MESSAGEHISTORY_H
+
 #include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QListWidgetItem>
 
@@ -34,3 +37,5 @@ signals:
     void sendGroupMessage(QString group, QString message);
     void addUser(QString user);
 };
+
+#endif

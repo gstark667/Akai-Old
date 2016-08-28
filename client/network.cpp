@@ -118,12 +118,30 @@ void Network::listOwnedGroups()
 }
 
 
+void Network::listGroupMembers(QString group)
+{
+    sendMessage("MEMBERS " + group);
+}
+
+
 void Network::createGroup(QString name, QList<QString> members)
 {
     QString message = "CREATE " + name;
     for (auto it = members.begin(); it != members.end(); ++it)
         message += " " + *it;
     sendMessage(message.simplified());
+}
+
+
+void Network::addGroupMember(QString group, QString member)
+{
+    sendMessage("ADD " + group + " " + member);
+}
+
+
+void Network::removeGroupMember(QString group, QString member)
+{
+    sendMessage("REMOVE " + group + " " + member);
 }
 
 
@@ -200,6 +218,10 @@ void Network::handleMessage(QString message)
     else if (argv[0] == "OWNED" && argc == 2)
     {
         emit ownGroups(argv[1].simplified().split(" "));
+    }
+    else if (argv[0] == "MEMBERS" && argc == 3)
+    {
+        emit updateGroupMembers(argv[1], argv[2].simplified().split(" "));
     }
     else if (argv[0] == "GRPNAME" && argc == 3)
     {

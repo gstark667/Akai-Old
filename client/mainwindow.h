@@ -30,6 +30,7 @@
 #include "messagehistory.h"
 #include "logindialog.h"
 #include "creategroupdialog.h"
+#include "editgroupdialog.h"
 #include "addfrienddialog.h"
 #include "acceptcalldialog.h"
 #include "network.h"
@@ -62,6 +63,7 @@ private:
     AddFriendDialog *m_addFriendDialog;
     AcceptCallDialog *m_acceptCallDialog;
     CreateGroupDialog *m_createGroupDialog;
+    EditGroupDialog *m_editGroupDialog;
     Network *m_network;
     Audio *m_audio;
 

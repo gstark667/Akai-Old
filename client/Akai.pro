@@ -11,6 +11,7 @@ RC_ICONS += icons/akai.svg
 HEADERS += addfrienddialog.h \
            acceptcalldialog.h \
            creategroupdialog.h \
+           editgroupdialog.h \
            messagelist.h \
            logindialog.h \
            mainwindow.h \
@@ -21,6 +22,7 @@ HEADERS += addfrienddialog.h \
 SOURCES += addfrienddialog.cpp \
            acceptcalldialog.cpp \
            creategroupdialog.cpp \
+           editgroupdialog.cpp \
            messagelist.cpp \
            logindialog.cpp \
            main.cpp \
