@@ -16,6 +16,15 @@
 #include <QtMultimedia/QAudioOutput>
 
 
+struct HostPortPair
+{
+    QHostAddress host;
+    quint16      port;
+
+    bool operator==(const HostPortPair &rhs) { return rhs.host.toIPv4Address() == host.toIPv4Address() && rhs.port == port; };
+};
+
+
 class AudioWriter: public QThread
 {
 private:
@@ -41,13 +50,12 @@ class AudioSender: public QThread
 private:
     QIODevice     *m_inputDevice;
     QUdpSocket    *m_sock;
-    QHostAddress   m_peerAddress;
-    quint16        m_peerPort;
+    QList<HostPortPair> m_peers;
 
     bool           m_stop;
 
 public:
-    AudioSender(QIODevice *inputDevice, QUdpSocket *sock, QHostAddress peerAddress, quint16 peerPort);
+    AudioSender(QIODevice *inputDevice, QUdpSocket *sock, QList<HostPortPair> peers);
 
     void run();
     void stop();
@@ -70,8 +78,9 @@ private:
     AudioWriter  *m_writer;
     AudioSender  *m_sender;
 
-    QHostAddress  m_peerAddress;
-    quint16       m_peerPort;
+    QList<HostPortPair> m_peers;
+    //QHostAddress  m_peerAddress;
+    //quint16       m_peerPort;
 
     bool          m_isListen;
     QHostAddress  m_broker;
