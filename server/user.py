@@ -3,6 +3,7 @@ import ssl
 
 
 users = []
+group_calls = {}
 message_queue = []
 
 
@@ -10,11 +11,20 @@ class UserException(Exception):
     pass
 
 
+
 def get_user(name):
     for user in users:
         if user.name == name:
             return user
     raise UserException('User "%s" is not online' % (name))
+
+
+def get_group_call(user, gid):
+    if gid in group_calls:
+        return group_calls[gid]
+    if database.get_group(user, gid):
+        return GroupCall(gid)
+    raise UserException('Group %s does not exist')
 
 
 def split_message(message):
@@ -25,6 +35,18 @@ def split_message(message):
     if trailer:
         args.append(trailer)
     return args
+
+
+class GroupCall:
+    def __init__(self, gid):
+        self.gid = gid
+        self.members = []
+
+    def join(user):
+        pass
+
+    def leave(user):
+        pass
 
 
 class User:
@@ -230,6 +252,16 @@ class User:
                 message += member + ' '
         self.send_message(message.strip())
 
+    def join_group_call(self, gid):
+        if not database.is_group_member(self.name, gid, self.name):
+            raise UserException('You are not a member of group %s' % (gid))
+        pass
+
+    def leave_group_call(self, gid):
+        if not database.is_group_member(self.name, gid, self.name):
+            raise UserException('You are not a member of group %s' % (gid))
+        pass
+
     def quit(self):
         self.close()
         users.remove(self)
@@ -240,26 +272,28 @@ class User:
         argc = len(args)
 
         actions = {
-            'REGISTER': self.register,
-            'USER'    : self.authenticate,
-            'USERS'   : self.users,
-            'USERMSG' : self.send_usermsg,
-            'GRPMSG'  : self.send_grpmsg,
-            'MSGHIST' : self.message_history,
-            'GRPHIST' : self.group_history,
-            'GRPNAME' : self.group_name,
-            'FRIEND'  : self.friend,
-            'UNFRIEND': self.unfriend,
-            'FRIENDS' : self.friends,
-            'GROUPS'  : self.groups,
-            'OWNED'   : self.owned,
-            'MEMBERS' : self.members,
-            'CREATE'  : self.create,
-            'ADD'     : self.add,
-            'REMOVE'  : self.remove,
-            'DISBAND' : self.disband,
-            'CALL'    : self.send_call,
-            'QUIT'    : self.quit
+            'REGISTER' : self.register,
+            'USER'     : self.authenticate,
+            'USERS'    : self.users,
+            'USERMSG'  : self.send_usermsg,
+            'GRPMSG'   : self.send_grpmsg,
+            'MSGHIST'  : self.message_history,
+            'GRPHIST'  : self.group_history,
+            'GRPNAME'  : self.group_name,
+            'FRIEND'   : self.friend,
+            'UNFRIEND' : self.unfriend,
+            'FRIENDS'  : self.friends,
+            'GROUPS'   : self.groups,
+            'OWNED'    : self.owned,
+            'MEMBERS'  : self.members,
+            'CREATE'   : self.create,
+            'ADD'      : self.add,
+            'REMOVE'   : self.remove,
+            'DISBAND'  : self.disband,
+            'CALL'     : self.send_call,
+            'JOINCALL' : self.join_group_call,
+            'LEAVECALL': self.leave_group_call,
+            'QUIT'     : self.quit
         }
 
         try:
