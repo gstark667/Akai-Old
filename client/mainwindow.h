@@ -33,6 +33,7 @@
 #include "editgroupdialog.h"
 #include "addfrienddialog.h"
 #include "acceptcalldialog.h"
+#include "configdialog.h"
 #include "network.h"
 #include "audio.h"
 
@@ -45,6 +46,7 @@ private:
     QAction *addFriendAction;
     QAction *createGroupAction;
     QAction *stopCallAction;
+    QAction *configureAction;
     QWidget *m_messageWidget;
     QGridLayout *m_gridLayout;
     QSplitter *m_mainSplit;
@@ -64,6 +66,7 @@ private:
     AcceptCallDialog *m_acceptCallDialog;
     CreateGroupDialog *m_createGroupDialog;
     EditGroupDialog *m_editGroupDialog;
+    ConfigDialog *m_configDialog;
     Network *m_network;
     Audio *m_audio;
 

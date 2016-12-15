@@ -12,6 +12,7 @@ HEADERS += addfrienddialog.h \
            acceptcalldialog.h \
            creategroupdialog.h \
            editgroupdialog.h \
+           configdialog.h \
            messagelist.h \
            logindialog.h \
            mainwindow.h \
@@ -23,6 +24,7 @@ SOURCES += addfrienddialog.cpp \
            acceptcalldialog.cpp \
            creategroupdialog.cpp \
            editgroupdialog.cpp \
+           configdialog.cpp \
            messagelist.cpp \
            logindialog.cpp \
            main.cpp \
