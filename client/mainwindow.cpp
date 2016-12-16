@@ -24,6 +24,7 @@ void MainWindow::setupUI()
     addFriendAction = new QAction(this);
     createGroupAction = new QAction(this);
     stopCallAction = new QAction(this);
+    configureAction = new QAction(this);
 
     m_messageWidget = new QWidget(this);
     m_gridLayout = new QGridLayout(m_messageWidget);
@@ -62,6 +63,7 @@ void MainWindow::setupUI()
     friendsMenu->addAction(addFriendAction);
     groupsMenu->addAction(createGroupAction);
     callMenu->addAction(stopCallAction);
+    menuOptions->addAction(configureAction);
 
     retranslateUI();
 
@@ -70,6 +72,7 @@ void MainWindow::setupUI()
     m_acceptCallDialog = new AcceptCallDialog(this);
     m_createGroupDialog = new CreateGroupDialog(this);
     m_editGroupDialog = new EditGroupDialog(this);
+    m_configDialog = new ConfigDialog(this);
 
     connect(m_loginDialog, &LoginDialog::login, m_network, &Network::login);
     connect(m_network, &Network::isAuth, m_loginDialog, &LoginDialog::close);
@@ -125,6 +128,7 @@ void MainWindow::setupUI()
     connect(m_network, &Network::callRequested, m_acceptCallDialog, &AcceptCallDialog::callRequested);
     connect(m_acceptCallDialog, &AcceptCallDialog::startCall, m_audio, &Audio::startCall);
     connect(m_acceptCallDialog, &AcceptCallDialog::callFriend, m_audio, &Audio::startListen);
+    connect(configureAction, &QAction::triggered, m_configDialog, &ConfigDialog::show);
     connect(stopCallAction, &QAction::triggered, m_audio, &Audio::stopCall);
 
     m_loginDialog->show();
@@ -137,6 +141,7 @@ void MainWindow::retranslateUI()
     addFriendAction->setText(QApplication::translate("MainWindow", "Add Friend", 0));
     createGroupAction->setText(QApplication::translate("MainWindow", "Create Group", 0));
     stopCallAction->setText(QApplication::translate("MainWindow", "Stop Call", 0));
+    configureAction->setText(QApplication::translate("MainWindow", "Configure", 0));
     friendsMenu->setTitle(QApplication::translate("MainWindow", "&Friends", 0));
     groupsMenu->setTitle(QApplication::translate("MainWindow", "&Groups", 0));
     callMenu->setTitle(QApplication::translate("MainWindow", "&Call", 0));
