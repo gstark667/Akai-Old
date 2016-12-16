@@ -22,7 +22,8 @@ void Network::login(QString username, QString password)
 {
     //connectToHost(m_serverHost, m_serverPort);
     QSettings settings;
-    addCaCertificates(settings.value("cert_path").toString());
+    QSslCertificate cert(settings.value("cert").toString().toUtf8());
+    addCaCertificate(cert);
     connectToHostEncrypted(m_serverHost.toString(), m_serverPort);
     waitForConnected();
     // TODO add some connection error message to the status bar

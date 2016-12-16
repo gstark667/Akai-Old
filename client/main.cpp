@@ -18,9 +18,9 @@ int main(int argc, char **argv)
     if (!settings.contains("server"))
         settings.setValue("server", "127.0.0.1");
     if (!settings.contains("port"))
-	settings.setValue("port", 6667);
+        settings.setValue("port", 6667);
     if (!settings.contains("callport"))
-	settings.setValue("callport", 6668);
+        settings.setValue("callport", 6668);
 
     qDebug() << settings.fileName();
 
