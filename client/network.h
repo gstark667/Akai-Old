@@ -12,8 +12,9 @@ class Network: public QSslSocket
 {
     Q_OBJECT
 private:
+    QString      m_username;
     QHostAddress m_serverHost;
-    quint16       m_serverPort;
+    quint16      m_serverPort;
 
 public:
     Network(QHostAddress serverHost, quint16 serverPort, QObject *parent);
@@ -35,6 +36,7 @@ public slots:
     void getGroupHistory(QString group);
     void addFriend(QString name);
     void callFriend(QString name, quint16 port);
+    void callGroup(QString group, quint16 port);
     void removeFriend(QString name);
     void listGroups();
     void listOwnedGroups();

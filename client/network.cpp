@@ -20,6 +20,7 @@ Network::~Network()
 
 void Network::login(QString username, QString password)
 {
+    m_username = username;
     //connectToHost(m_serverHost, m_serverPort);
     QSettings settings;
     QSslCertificate cert(settings.value("cert").toString().toUtf8());
@@ -98,6 +99,13 @@ void Network::callFriend(QString name, quint16 port)
 {
     sendMessage("CALL " + name + " " + QString::number(port));
     std::cout << "calling " << name.toStdString() << std::endl;
+}
+
+
+void Network::callGroup(QString group, quint16 port)
+{
+    sendMessage("JOINCALL " + group + " " + QString::number(port));
+    std::cout << "calling " << group.toStdString() << std::endl;
 }
 
 

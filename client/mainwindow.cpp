@@ -123,6 +123,10 @@ void MainWindow::setupUI()
 
     connect(m_messageList, &MessageList::callFriend, m_audio, &Audio::startListen);
     connect(m_audio, &Audio::callFriend, m_network, &Network::callFriend);
+
+    connect(m_messageList, &MessageList::callGroup, m_audio, &Audio::startListenGroup);
+    connect(m_audio, &Audio::callGroup, m_network, &Network::callGroup);
+
     connect(m_messageList, &MessageList::removeFriend, m_network, &Network::removeFriend);
     // TODO there needs to be a middleman here where the user accepts or decline's the call
     connect(m_network, &Network::callRequested, m_acceptCallDialog, &AcceptCallDialog::callRequested);

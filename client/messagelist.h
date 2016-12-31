@@ -53,13 +53,15 @@ private:
     QString m_group;
 
 public:
-    GroupOwnerMenu(QString group, QWidget *parent);
+    GroupOwnerMenu(QString group, bool isOwner, QWidget *parent);
 
 private slots:
+    void callSelected();
     void editSelected();
     void disbandSelected();
 
 signals:
+    void call(QString group);
     void edit(QString group);
     void disband(QString group);
 };
@@ -100,6 +102,7 @@ signals:
     void groupSelected(QListWidgetItem *item);
     void callFriend(QString name);
     void removeFriend(QString name);
+    void callGroup(QString group);
     void editGroup(QString group);
     void disbandGroup(QString group);
 };

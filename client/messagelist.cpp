@@ -23,11 +23,21 @@ void FriendMenu::unfriendSelected()
 }
 
 
-GroupOwnerMenu::GroupOwnerMenu(QString group, QWidget *parent): QMenu(parent)
+GroupOwnerMenu::GroupOwnerMenu(QString group, bool isOwner, QWidget *parent): QMenu(parent)
 {
     m_group = group;
-    addAction("Edit", this, &GroupOwnerMenu::editSelected);
-    addAction("Disband", this, &GroupOwnerMenu::disbandSelected);
+    addAction("Call", this, &GroupOwnerMenu::callSelected);
+    if (isOwner)
+    {
+        addAction("Edit", this, &GroupOwnerMenu::editSelected);
+        addAction("Disband", this, &GroupOwnerMenu::disbandSelected);
+    }
+}
+
+
+void GroupOwnerMenu::callSelected()
+{
+    emit call(m_group);
 }
 
 
@@ -206,9 +216,17 @@ void MessageList::showGroupMenu(const QPoint &pos)
     std::cout << pointedGroup->data(Qt::UserRole+1).toString().toStdString() << std::endl;
     if (pointedGroup->data(Qt::UserRole+1) == "owner")
     {
-        GroupOwnerMenu groupMenu(pointedGroup->data(Qt::UserRole).toString(), this);
+        GroupOwnerMenu groupMenu(pointedGroup->data(Qt::UserRole).toString(), true, this);
+        connect(&groupMenu, &GroupOwnerMenu::call, this, &MessageList::callGroup);
         connect(&groupMenu, &GroupOwnerMenu::edit, this, &MessageList::editGroup);
         connect(&groupMenu, &GroupOwnerMenu::disband, this, &MessageList::disbandGroup);
+        groupMenu.exec(globalPos);
+        groupMenu.disconnect();
+    }
+    else if (pointedGroup->data(Qt::UserRole+1) == "member")
+    {
+        GroupOwnerMenu groupMenu(pointedGroup->data(Qt::UserRole).toString(), false, this);
+        connect(&groupMenu, &GroupOwnerMenu::call, this, &MessageList::callGroup);
         groupMenu.exec(globalPos);
         groupMenu.disconnect();
     }

@@ -166,6 +166,19 @@ void Audio::startListen(QString name)
 }
 
 
+void Audio::startListenGroup(QString group)
+{
+    std::cout << "STARTING Listen Group" << std::endl;
+    if (m_isListen)
+        return; // TODO error message to show that you're already in a call
+    m_sock->writeDatagram("Hello World", m_broker, m_port);
+    connect(m_sock, &QUdpSocket::readyRead, this, &Audio::readDatagrams);
+    std::cout << "Local: " << m_sock->localPort() << " Peer: " << m_sock->peerPort() << std::endl;
+    m_isListen = true;
+    emit callGroup(group, m_sock->localPort());
+}
+
+
 void Audio::startCall(QHostAddress peerAddress, quint16 peerPort)
 {
     std::cout << "STARTING Call" << std::endl;

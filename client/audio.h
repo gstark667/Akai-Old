@@ -102,11 +102,13 @@ private slots:
 
 public slots:
     void startListen(QString name);
+    void startListenGroup(QString group);
     void startCall(QHostAddress peerAddress, quint16 peerPort);
     void stopCall();
 
 signals:
     void callFriend(QString name, quint16 port);
+    void callGroup(QString group, quint16 port);
 };
 
 #endif

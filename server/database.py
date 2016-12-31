@@ -121,6 +121,13 @@ def is_group_member(user, gid, member_name):
     return member['_id'] in group['members']
 
 
+def is_group_owner(user, gid, member_name):
+    gid = ObjectId(gid)
+    member = get_user(member_name)
+    group = get_group(user, gid, False)
+    return member['_id'] == group['owner']
+
+
 def get_group_members(user, gid):
     group = get_group(user, gid, False)
     return [get_user_by_id(user)['name'] for user in group['members']] + [get_user_by_id(group['owner'])['name']]

@@ -23,7 +23,8 @@ def get_group_call(user, gid):
     if gid in group_calls:
         return group_calls[gid]
     if database.get_group(user, gid):
-        return GroupCall(gid)
+        group_calls[gid] = GroupCall(gid)
+        return group_calls[gid]
     raise UserException('Group %s does not exist')
 
 
@@ -40,13 +41,27 @@ def split_message(message):
 class GroupCall:
     def __init__(self, gid):
         self.gid = gid
-        self.members = []
+        self.members = {}
 
-    def join(user):
-        pass
+    def join(self, user, ip, port):
+        print(user + " Joined call")
+        print(self.members)
+        user = get_user(user)
+        for member in self.members:
+            print("Telling " + member)
+            get_user(member).joined_group_call(self.gid, user.name, ip, port)
+            user.joined_group_call(self.gid, member, self.members[member][0], self.members[member][1])
+        self.members[user.name] = (ip, port)
 
-    def leave(user):
-        pass
+    def leave(self, user):
+        print(user + " Left call")
+        del self.members[user]
+        for member in self.members:
+            print("Telling " + member)
+            get_user(member).left_group_call(self.gid, user)
+
+        if len(self.members) == 0:
+            del group_calls[self.gid]
 
 
 class User:
@@ -252,15 +267,23 @@ class User:
                 message += member + ' '
         self.send_message(message.strip())
 
-    def join_group_call(self, gid):
-        if not database.is_group_member(self.name, gid, self.name):
+    def join_group_call(self, gid, port):
+        if not database.is_group_member(self.name, gid, self.name) and not database.is_group_owner(self.name, gid, self.name):
             raise UserException('You are not a member of group %s' % (gid))
-        pass
+        call = get_group_call(self.name, gid)
+        call.join(self.name, self.addr[0], port)
+
+    def joined_group_call(self, gid, name, ip, port):
+        self.send_message('JOINED %s %s %s %s' % (gid, name, ip, port))
 
     def leave_group_call(self, gid):
-        if not database.is_group_member(self.name, gid, self.name):
+        if not database.is_group_member(self.name, gid, self.name) and not database.is_group_owner(self.name, gid, self.name):
             raise UserException('You are not a member of group %s' % (gid))
-        pass
+        call = get_group_call(self.name, gid)
+        call.join(self.name)
+
+    def left_group_call(self, gid, name):
+        self.send_message('LEFT %s %s' % (gid, name))
 
     def quit(self):
         self.close()
